@@ -1,0 +1,26 @@
+{
+    "name": "skyfile/event_swoole",
+    "description": "这是从swool_framework中单独拆出来的事务功能, 个人项目需要, 改进中......",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        },
+        {
+            "packagist": false
+        },
+        {
+            "url": "git@github.com:c9s/GetOptionKit.git",
+            "type": "git"
+        },
+        {
+            "url": "https://github.com/swiftmailer/swiftmailer.git",
+            "type": "git"
+        }
+    ],
+    "require": {
+        "c9s/GetOptionKit": "1.2.4",
+        "swiftmailer/swiftmailer": "5.4.3"
+    },
+    "scripts": {}
+}
