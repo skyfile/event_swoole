@@ -457,7 +457,7 @@ class Tool
      * @param  array  $servers [description]
      * @return array          [description]
      */
-    static function getServer(array $servers)
+    static public function getServer(array $servers)
     {
         $weight = 0;
         //移除不在线的节点
@@ -485,6 +485,19 @@ class Tool
         }
         //绝不会到这里
         return $servers[0];
+    }
+
+    /**
+     * 检查文件是否可读可写
+     * @param  [type] $filePath [description]
+     * @return [type]           [description]
+     */
+    static public function checkDir ($filePath)
+    {
+        if (@is_readable($filePath) && @is_writable($filePath)) {
+            return true;
+        }
+        return false;
     }
 
 }

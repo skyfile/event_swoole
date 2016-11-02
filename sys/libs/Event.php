@@ -133,12 +133,15 @@ class Event
 	 */
 	public function runWorker($worker_num = 1, $daemon = false, $pid_name = 'event_swoole_worker')
 	{
-
-		$this->pidfile = "/var/run/$pid_name.pid";
+        //判定pid目录是否有写入权限
+        if (!\Sys\Tool::checkDir($this->config['pid_path'])) {
+            exit("PID文件没有写入权限, 请使用root权限执行操作". NL);
+        }
+		$this->pidfile = $this->config['pid_path']. $pid_name . '.pid';
 		if ($worker_num > 1 || $daemon) {
 			//检查是否安装了swoole扩展
 			if (!class_exists('\swoole\process')) {
-				throw new \Exception("require swoole extension");
+				throw new \Exception("require swoole extension version more than 1.8.0");
 			}
 			//最高启动200个进程
 			if ($worker_num < 0 || $worker_num > 200) {
