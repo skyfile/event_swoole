@@ -51,7 +51,7 @@ require SYS_PATH . 'Sys.php';
 
 //自动加载
 Sys::addNameSpace('Sys', SYS_PATH);
-// Sys::addNameSpace('Event', EVENT_PATH);
+Sys::addNameSpace('Class', CLASS_PATH);
 Sys::addNameSpace('Event', EVENT_PATH);
 Sys::addNameSpace('Model', MODEL_PATH);
 

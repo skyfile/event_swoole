@@ -119,7 +119,6 @@ class Event
             $process = new \swoole\process(array($this, '_worker'), false, false);
             $process->start();
             $this->_workers[] = $process;
-            // \Sys::$obj->log->info(var_export($process, true));
         }
     }
 

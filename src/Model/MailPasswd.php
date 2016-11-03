@@ -4,7 +4,7 @@ namespace Model;
 /**
 * appid模型
 */
-class MailAppid extends Base
+class MailPasswd extends Base
 {
 
 
