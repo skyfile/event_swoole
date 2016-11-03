@@ -84,7 +84,7 @@ class SendMailEvent implements EventInterface
      */
     protected function initMail()
     {
-        $this->transport = \Swift_SmtpTransport::newInstance('smtp.exmail.qq.com', 25);
+        $this->transport = \Swift_SmtpTransport::newInstance('smtp.qq.com', 25);
         $this->transport->setUsername($this->data['sendMail']);
         $this->transport->setPassword($this->password);
         $this->mailer = \Swift_Mailer::newInstance($this->transport);
