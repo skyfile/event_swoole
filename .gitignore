@@ -1,3 +1,4 @@
 /src/Logs/*
+/src/Public/.user.ini
 /vendor
 composer.lock

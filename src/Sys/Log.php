@@ -18,7 +18,7 @@ class Log
         $this->log = new $class($config);
     }
 
-    public function getInstance($key = 'master')
+    static public function getInstance($key = 'master')
     {
         if (!self::$obj) {
             $config = \Sys::$obj->config['log'];

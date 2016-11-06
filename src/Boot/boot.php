@@ -39,25 +39,27 @@ date_default_timezone_set('PRC');
 //当前时间戳
 // define("CURR_TIMESTAMP", time());
 
-define('BASE_PATH', realpath(__DIR__));
+define('BASE_PATH', realpath(__DIR__ . '/../'));
 define("SYS_PATH", BASE_PATH . '/Sys/');
 define("CONF_PATH", BASE_PATH . '/Configs/');
-define("EVENT_PATH", BASE_PATH . '/Events/');
-define("MODEL_PATH", BASE_PATH . '/Model/');
-define("CLASS_PATH", BASE_PATH . '/Class/');
 define("VENDOR_PATH", BASE_PATH . '/../vendor/');
 
 require SYS_PATH . 'Sys.php';
-
 //自动加载
-Sys::addNameSpace('Sys', SYS_PATH);
-Sys::addNameSpace('Class', CLASS_PATH);
-Sys::addNameSpace('Event', EVENT_PATH);
-Sys::addNameSpace('Model', MODEL_PATH);
+$nameSpace = ['Sys', 'Class', 'Event', 'Model'];
+foreach ($nameSpace as $name) {
+	\Sys::addNameSpace($name, BASE_PATH. "/$name/");
+}
 
 spl_autoload_register('\\Sys::autoload');
 
 //composer
 require_once VENDOR_PATH. 'autoload.php';
 
-Sys::getInstance();
+\Sys::getInstance();
+
+/**
+ * 初始化HTTP方法内容
+ * @var [type]
+ */
+$_PUT = $_PATCH = $_DELETE = [];

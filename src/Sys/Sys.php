@@ -97,7 +97,10 @@ class Sys
     {
         $root = explode('\\', trim($class, '\\'), 2);
         if (count($root) > 1 and isset(self::$namespaces[$root[0]])) {
-            include self::$namespaces[$root[0]].str_replace('\\', '/', $root[1]).'.php';
+            $fileName = self::$namespaces[$root[0]].str_replace('\\', '/', $root[1]).'.php';
+            if (is_file($fileName)) {
+                include $fileName;
+            }
         }
     }
 

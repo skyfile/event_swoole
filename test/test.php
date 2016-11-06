@@ -1,5 +1,5 @@
 <?php
-require realpath(__DIR__) . '/../src/boot.php';
+require realpath(__DIR__) . '/../src/Boot/boot.php';
 
 $model = new \Model\MailAppid();
 

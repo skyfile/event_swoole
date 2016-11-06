@@ -15,21 +15,11 @@ class Event
     protected $async = false;
     protected $pidfile;
 
-    static $event_path;
     static $obj;
 
 	function __construct($config)
 	{
 		$this->config = $config;
-
-        if (defined('EVENT_PATH')) {
-            self::$event_path = EVENT_PATH;
-        } elseif (defined('WEB_PATH')) {
-            self::$event_path = WEB_PATH. '/events/';
-            define('EVENT_PATH', self::$event_path);
-        } else {
-            trigger_error("Can't define EVENT_PATH", E_USER_WARNING);
-        }
 
 		if (isset($this->config['async']) && $this->config['async']) {
 			$this->_queue = \Sys::$obj->queue;
