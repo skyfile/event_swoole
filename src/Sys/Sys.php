@@ -8,6 +8,7 @@ class Sys
     static public $obj;
     static public $base_path;
     static protected $namespaces;
+    static public $models;
 
     public $config;
     public $factorys;
@@ -34,6 +35,21 @@ class Sys
             self::$obj = new self;
         }
         return self::$obj;
+    }
+
+    /**
+     * 获取模型
+     * @param  [type] $modelName [description]
+     * @return [type]            [description]
+     */
+    public function getModel($modelName)
+    {
+        // $modelName = \Sys\Tool::toCamelCase($modelName);
+        if (!isset(self::$models[$modelName])) {
+            $model = '\\Model\\'.$modelName;
+            self::$models[$modelName] = new $model();
+        }
+        return self::$models[$modelName];
     }
 
     /**

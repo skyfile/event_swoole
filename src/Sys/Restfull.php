@@ -50,12 +50,13 @@ class Restfull
 			default:
 				break;
 		}
+		$this->params   = array_slice($urlPath, 4);
 		$urlPath = array_map('\\Sys\\Tool::toCamelCase', $urlPath);
 		$this->version  = $urlPath[0];
 		$this->protocol = $urlPath[1];
 		$this->module   = $urlPath[2];
 		$this->action   = $urlPath[3];
-		$this->params   = array_slice($urlPath, 4);
+
 	}
 
 	/**

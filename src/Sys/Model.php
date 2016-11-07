@@ -7,12 +7,12 @@ namespace Sys;
 class Model
 {
 
-    private $table = '';
+    public $table = '';
     public $select = '*';
 
     function __construct($config_key = 'master')
     {
-        $this->db = \Sys::$obj->db($config_key);
+        $this->db = \Sys::$obj->Db($config_key);
         $this->db->setTable( $this->getTableName() );
         $this->db->selectDB();
     }
@@ -23,8 +23,9 @@ class Model
      */
     public function getTableName()
     {
-        if(empty($this->table)) {
-            $this->table = \Sys\Tool::toUnderScore( end( explode( '\\', get_class($this) ) ) );
+        if(!$this->table) {
+            $table = explode( '\\', get_class($this) );
+            $this->table = \Sys\Tool::toUnderScore( end($table) );
         }
         return $this->table;
     }

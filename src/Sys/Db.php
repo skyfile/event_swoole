@@ -47,7 +47,7 @@ class Db
         }
     }
 
-    public function getInstance($key)
+    static public function getInstance($key)
     {
         if (!self::$obj) {
             $config = \Sys::$obj->config['db'];
@@ -138,16 +138,16 @@ class Db
     {
         switch ($db_config['type']) {
             case self::TYPE_MYSQL:
-                $db = new db\MySQL($db_config);
+                $db = new Db\MySQL($db_config);
                 break;
             case self::TYPE_MYSQLi:
-                $db = new db\MySQLi($db_config);
+                $db = new Db\MySQLi($db_config);
                 break;
             case self::TYPE_CLMysql:
-                $db = new db\CLMySQL($db_config);
+                $db = new Db\CLMySQL($db_config);
                 break;
             default:
-                $db = new db\PdoDB($db_config);
+                $db = new Db\PdoDB($db_config);
                 break;
         }
         $db->connect();
@@ -239,6 +239,7 @@ class Db
         }
         $this->db_apt->result = $this->query($this->db_apt->sql);
         $this->db_apt->is_execute++;
+        $this->db_apt->init();
     }
 
     /**
