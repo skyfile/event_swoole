@@ -1,24 +1,24 @@
 <?php
 // define('DEBUG', 'on');
-require realpath(__DIR__ . '/../') . '/boot.php';
+require realpath(__DIR__ . '/../') . '/Boot/boot.php';
 
 $start = new Start();
 $start->run();
 
 /**
-* 启动服务
-*/
+ * 启动服务
+ */
 class Start
 {
-    public $pidFile = '/var/run/event_swoole_worker.pid';
+    public $pidFile    = '/var/run/event_swoole_worker.pid';
     public $server_pid = 0;
     public $workerNums = 0;
-    public $daemon = false;
-    public $argv = [];
-    public $opt = [];
-    public $optionKit = null;
+    public $daemon     = false;
+    public $argv       = [];
+    public $opt        = [];
+    public $optionKit  = null;
 
-    function __construct()
+    public function __construct()
     {
         if (is_file($this->pidFile)) {
             $this->server_pid = file_get_contents($this->pidFile);
@@ -27,19 +27,19 @@ class Start
         $this->argv = $argv;
         $this->opt();
         $this->workerNums = isset($this->opt['worker']) ? (int) $this->opt['worker']->value : $this->workerNums;
-        $this->daemon = isset($this->opt['daemon']) ? true : $this->daemon;
+        $this->daemon     = isset($this->opt['daemon']) ? true : $this->daemon;
 
     }
 
     public function opt()
     {
         $this->optionKit = new \GetOptionKit\GetOptionKit;
-        $defaultOptions = array(
+        $defaultOptions  = [
             'h|help'    => '显示帮助界面',
             'd|daemon'  => '启用守护进程模式(默认为守护进程)',
             'w|worker?' => '设置Worker进程的数量',
-        );
-        foreach($defaultOptions as $k => $v) {
+        ];
+        foreach ($defaultOptions as $k => $v) {
             //解决Windows平台乱码问题
             if (PHP_OS == 'WINNT') {
                 $v = iconv('utf-8', 'gbk', $v);
@@ -56,18 +56,18 @@ class Start
     public function help()
     {
         $arr = [
-            'start' =>  '[启动]',
-            'stop'  =>  '[停止]',
-            'reload'=>  '[重启]',
-            'add'   =>  '[动态新增进程]',
-            'del'   =>  '[动态减少进程]'
+            'start'  => '[启动]',
+            'stop'   => '[停止]',
+            'reload' => '[重启]',
+            'add'    => '[动态新增进程]',
+            'del'    => '[动态减少进程]',
         ];
         $tip = [];
         foreach ($arr as $key => $value) {
-            $tip[] = sprintf("\033[0;34m%s\033[0m", $key). " " .$value;
+            $tip[] = sprintf("\033[0;34m%s\033[0m", $key) . ' ' . $value;
         }
 
-        $this->echo_cli(str_repeat("=", 90). NL. implode(' | ', $tip). NL. str_repeat("=", 90));
+        $this->echo_cli(str_repeat('=', 90) . NL . implode(' | ', $tip) . NL . str_repeat('=', 90));
         $this->optionKit->specs->printOptions();
         $this->echo_cli();
     }
@@ -78,12 +78,12 @@ class Start
      */
     public function run()
     {
-        if (empty($this->argv[1]) or isset($this->opt['help'])) {
+        if (empty($this->argv[1]) || isset($this->opt['help'])) {
             $this->help();
-        }elseif (method_exists($this, $this->argv[1])) {
+        } elseif (method_exists($this, $this->argv[1])) {
             $action = $this->argv[1];
             $this->$action();
-        }else {
+        } else {
             $this->help();
         }
         return;
@@ -101,14 +101,14 @@ class Start
         }
 
         \Sys::setProcessName('event_swoole_worker');
-        if($this->workerNums){
+        if ($this->workerNums) {
             $this->echo_cli('Event_server is start running.');
             \Sys::$obj->event->runWorker($this->workerNums ? $this->workerNums : 3, $this->daemon);
-        }else {
-            $workerNums = (int) $this->ask_cli("请设置进程数量 -w:");
+        } else {
+            $workerNums = (int) $this->ask_cli('请设置进程数量 -w:');
             if ($workerNums > 0) {
                 $this->workerNums = $workerNums;
-            }else {
+            } else {
                 $this->warning_cli('您设置进程数量无效, 请重新输入');
             }
             $this->start();
@@ -127,18 +127,18 @@ class Start
             return false;
         }
 
-        $res = strtolower($this->ask_cli("确定?(y/n):"));
-        if($res == 'y') {
+        $res = strtolower($this->ask_cli('确定?(y/n):'));
+        if ($res == 'y') {
             if (\Sys::$obj->Platform->kill($this->server_pid, SIGTERM)) {
                 $this->echo_cli('Event_server is stop.');
                 return true;
-            }else {
+            } else {
                 $this->warning_cli("Event_server can't stop!!! You can to kill master process!!!");
                 return false;
             }
-        }elseif ($res == 'n') {
+        } elseif ($res == 'n') {
             $this->echo_cli('放弃操作!');
-        }else {
+        } else {
             $this->stop();
         }
     }
@@ -155,19 +155,19 @@ class Start
         }
 
         if ($this->workerNums) {
-            for ($i=0; $i < $this->workerNums; $i++) {
+            for ($i = 0; $i < $this->workerNums; $i++) {
                 \Sys::setProcessName('event_swoole_worker');
                 if (\Sys::$obj->Platform->kill($this->server_pid, SIGUSR1)) {
-                    echo ($i+1)." | ";
+                    echo ($i + 1) . ' | ';
                 }
                 usleep(10000);
             }
             echo "\n";
-        }else {
-            $workerNums = $this->ask_cli("请设置新增进程数量 -w:");
+        } else {
+            $workerNums = $this->ask_cli('请设置新增进程数量 -w:');
             if ($workerNums > 0) {
                 $this->workerNums = $workerNums;
-            }else {
+            } else {
                 $this->warning_cli('您设置进程数量无效, 请重新输入');
             }
             $this->add();
@@ -188,18 +188,18 @@ class Start
         }
 
         if ($this->workerNums) {
-            for ($i=0; $i < $this->workerNums; $i++) {
-                if(\Sys::$obj->Platform->kill((int)$this->server_pid, SIGUSR2)) {
-                    echo ($i+1)." | ";
+            for ($i = 0; $i < $this->workerNums; $i++) {
+                if (\Sys::$obj->Platform->kill((int) $this->server_pid, SIGUSR2)) {
+                    echo ($i + 1) . ' | ';
                 }
                 usleep(10000);
             }
             echo "\n";
-        }else {
-            $workerNums = $this->ask_cli("请设置减少进程数量 -w:");
+        } else {
+            $workerNums = $this->ask_cli('请设置减少进程数量 -w:');
             if ($workerNums > 0) {
                 $this->workerNums = $workerNums;
-            }else {
+            } else {
                 $this->warning_cli('您设置进程数量无效, 请重新输入');
             }
             $this->del();
@@ -214,9 +214,9 @@ class Start
      */
     public function reload()
     {
-        exec("ps aux | grep event_swoole_worker", $output);
+        exec('ps aux | grep event_swoole_worker', $output);
         $this->workerNums = abs(count($output) - 2);
-        if($this->stop()){
+        if ($this->stop()) {
             $this->echo_cli('请稍后...');
             while (\Sys::$obj->Platform->kill($this->server_pid, 0)) {
                 echo '>';
@@ -234,7 +234,7 @@ class Start
     {
         if ($this->server_pid && \Sys::$obj->Platform->kill($this->server_pid, 0)) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -257,14 +257,16 @@ class Start
      */
     public function warning_cli($str = '')
     {
-        fwrite(STDERR, sprintf("\033[0;31m%s\033[0m", $str."\n"));
+        fwrite(STDERR, sprintf("\033[0;31m%s\033[0m", $str . "\n"));
     }
 
+    /**
+     * 输出
+     * @param  string $str [description]
+     * @return [type]      [description]
+     */
     public function echo_cli($str = '')
     {
-        fwrite(STDOUT, sprintf("\033[0;34m%s\033[0m", $str."\n"));
+        fwrite(STDOUT, sprintf("\033[0;34m%s\033[0m", $str . "\n"));
     }
 }
-
-
-
