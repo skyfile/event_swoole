@@ -2,3 +2,5 @@
 /src/Public/.user.ini
 /vendor
 composer.lock
+.tags_sorted_by_file
+.tags

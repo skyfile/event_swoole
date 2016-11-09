@@ -4,7 +4,7 @@ namespace Api\Index\V1;
 /**
  * 取出资源
  */
-class Get extends \Api\Base
+class Get extends Api
 {
     public function appid($name = '')
     {
