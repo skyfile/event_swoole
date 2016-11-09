@@ -15,6 +15,7 @@ class CreateApi
     public $createFailed = false; //是否创建失败
     public $files        = [];
     public $floor        = 1;
+    public $delAll       = false; //是否删除全部模块
 
     public function __construct()
     {
@@ -32,6 +33,7 @@ class CreateApi
             'v|version?' => 'API版本号',
             'i|init'     => '强制创建或重置',
             'l|list'     => '显示当前API模块列表',
+            'd|del'      => '删除指定API模块',
         ];
         foreach ($defaultOptions as $k => $v) {
             //解决Windows平台乱码问题
@@ -75,7 +77,8 @@ class CreateApi
         }
         if ($handle = opendir($dirName)) {
             $prefix   = '|' . str_repeat('_', ($this->floor - 1) * 2);
-            $showName = $prefix . ' ' . end(explode('/', $dirName));
+            $showName = explode('/', $dirName);
+            $showName = $prefix . ' ' . end($showName);
             $this->echo_cli($showName);
             while (false !== ($item = readdir($handle))) {
                 if ($item != '.' && $item != '..') {
@@ -93,6 +96,51 @@ class CreateApi
     }
 
     /**
+     * 删除指定模块
+     * @param  [type] $dirName [description]
+     * @return [type]          [description]
+     */
+    public function del()
+    {
+        if (isset($this->opt['name']) && $this->opt['name']->value) {
+            $this->name = \Sys\Tool::toCamelCase($this->opt['name']->value);
+        } elseif (strpos($this->argv[1], '-') !== 0) {
+            $this->name = \Sys\Tool::toCamelCase($this->argv[1]);
+        } else {
+            if (!$this->name) {
+                $this->name = $this->ask_cli('输入指定模块名称: ');
+                if ($this->name == '') {
+                    $this->del();
+                }
+            }
+        }
+
+        if (isset($this->opt['version']) && $this->opt['version']->value) {
+            $this->version = (int) $this->opt['version']->value;
+        } else {
+            if ($this->delAll != 'y') {
+                if ($this->version == 0) {
+                    $this->version = (int) $this->ask_cli('输入指定版本号：V');
+                    # code...
+                }
+                $this->delAll = $this->ask_cli('是否删除整个模块(y/n): ');
+                if ($this->delAll) {
+                    # code...
+                }
+                if ($this->version == 0) {
+                    $this->del();
+                }
+            } else {
+                $this->version = 0;
+            }
+        }
+        $dir = BASE_PATH . '/Api/' . \Sys\Tool::toCamelCase($this->name) . ($this->version != 0 ? 'V' . $this->version : '');
+        $this->echo_cli($dir);
+        // return $this->delDirAndFile($dir);
+
+    }
+
+    /**
      * 运行
      * @return [type] [description]
      */
@@ -102,8 +150,14 @@ class CreateApi
             return $this->help();
         }
 
+        //模块列表
         if (isset($this->opt['list'])) {
             return $this->getlist();
+        }
+
+        //删除模块
+        if (isset($this->opt['del'])) {
+            return $this->del();
         }
 
         //是否强制
@@ -208,10 +262,10 @@ class {$fileConf['name']} extends {$fileConf['extends']}
 EOF;
                 if (!file_put_contents($fileName, $content)) {
                     $this->createFailed = true;
-                    $this->warning_cli('创建文件: ' . $fileName . '失败!');
+                    $this->warning_cli('文件: ' . $fileName . ' 创建失败!');
                     return;
                 }
-                $this->echo_cli('创建文件: ' . $fileName . '成功!');
+                $this->echo_cli('文件: ' . $fileName . ' 创建成功!');
             }
         }
         if (!$this->createFailed) {
@@ -227,10 +281,10 @@ EOF;
     public function createDir($dir)
     {
         if (mkdir($dir, 0755, true)) {
-            $this->echo_cli($dir . ' 目录创建成功.');
+            $this->echo_cli('目录: ' . $dir . ' 创建成功.');
             return true;
         } else {
-            $this->warning_cli($dir, '目录创建失败, 可以尝试root权限执行');
+            $this->warning_cli('目录: ' . $dir, ' 创建失败, 可以尝试root权限执行');
             return false;
         }
     }
