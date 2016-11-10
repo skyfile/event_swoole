@@ -5,21 +5,22 @@ class EchoLog extends Log
 {
     protected $display = true;
 
-    function __construct($config)
+    public function __construct($config)
     {
-        if (isset($config['display']) and $config['display'] == false)
-        {
+        if (isset($config['display']) && $config['display'] == false) {
             $this->display = false;
         }
         parent::__construct($config);
     }
 
-    function put($msg, $level = self::INFO)
+    public function put($msg, $level = self::INFO)
     {
-        if ($this->display)
-        {
+        if ($this->display) {
             $log = $this->format($msg, $level);
-            if ($log) echo $log;
+            if ($log) {
+                echo $log;
+            }
+
         }
     }
 }

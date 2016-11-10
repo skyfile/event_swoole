@@ -13,36 +13,31 @@ class DBLog extends Log
     protected $db;
     protected $table;
 
-    function __construct($config)
+    public function __construct($config)
     {
-        if (empty($config['table']))
-        {
+        if (empty($config['table'])) {
             throw new \Exception(__CLASS__ . ": require \$config['table']");
         }
         $this->table = $config['table'];
-        if (isset($config['db']))
-        {
+        if (isset($config['db'])) {
             $this->db = \Sys::$obj->db($config['db']);
-        }
-        else
-        {
+        } else {
             $this->db = \Sys::$obj->db('master');
         }
         parent::__construct($config);
     }
 
-    function put($msg, $level = self::INFO)
+    public function put($msg, $level = self::INFO)
     {
         $put['logtype'] = self::convert($level);
-        $msg = $this->format($msg, $level);
-        if ($msg)
-        {
+        $msg            = $this->format($msg, $level);
+        if ($msg) {
             $put['msg'] = $msg;
             \Sys::$obj->db->insert($put, $this->table);
         }
     }
 
-    function create()
+    public function create()
     {
         return $this->db->query("CREATE TABLE `{$this->table}` (
             `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,

@@ -2,24 +2,24 @@
 namespace Sys;
 
 /**
-* 队列
-*/
+ * 队列
+ */
 class Queue
 {
     static $obj;
-	protected $_factory_key;
+    protected $_factory_key;
     protected $key = 'event:queue';
 
-	function __construct($config)
-	{
-		if (empty($config['id'])) {
-			$config['id'] = 'master';
-		}
-		$this->_factory_key = $config['id'];
-		if (!empty($config['key'])) {
-			$this->$key = $config['key'];
-		}
-	}
+    public function __construct($config)
+    {
+        if (empty($config['id'])) {
+            $config['id'] = 'master';
+        }
+        $this->_factory_key = $config['id'];
+        if (!empty($config['key'])) {
+            $this->$key = $config['key'];
+        }
+    }
 
     public function getInstance($key = 'master')
     {
@@ -45,11 +45,11 @@ class Queue
         return false;
     }
 
-	/**
+    /**
      * 出队
      * @return bool|mixed
      */
-    function pop()
+    public function pop()
     {
         $ret = \Sys::$obj->redis($this->_factory_key)->lPop($this->key);
         if ($ret) {
@@ -64,10 +64,8 @@ class Queue
      * @param $data
      * @return int
      */
-    function push($data)
+    public function push($data)
     {
         return \Sys::$obj->redis($this->_factory_key)->lPush($this->key, serialize($data));
     }
-
-
 }

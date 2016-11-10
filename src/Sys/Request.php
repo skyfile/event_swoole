@@ -2,8 +2,8 @@
 namespace Sys;
 
 /**
-* 路由类
-*/
+ * 路由类
+ */
 class Request
 {
     static $obj;
@@ -23,7 +23,7 @@ class Request
         $this->init();
     }
 
-    static public function getInstance($key = 'master')
+    public static function getInstance($key = 'master')
     {
         if (!self::$obj) {
             self::$obj = new self();
@@ -33,9 +33,9 @@ class Request
 
     public function init()
     {
-        $parse = parse_url($this->getUrlFull());
+        $parse        = parse_url($this->getUrlFull());
         $this->scheme = $parse['scheme'];
-        $this->host = $parse['host'];
+        $this->host   = $parse['host'];
         $this->parsePath($parse['path']);
         if (isset($parse['query'])) {
             $this->parseQuery($parse['query']);
@@ -49,7 +49,7 @@ class Request
     public function getUrlFull()
     {
         if (!$this->urlFull) {
-            $this->urlFull = $_SERVER['REQUEST_SCHEME'] ."://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+            $this->urlFull = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         }
         return $this->urlFull;
     }
@@ -76,7 +76,7 @@ class Request
         $arr = array_map('trim', explode('&', $query));
         foreach ($arr as $v) {
             if ($v != '') {
-                $v = array_map('trim', explode('=', $v));
+                $v                     = array_map('trim', explode('=', $v));
                 $this->paramArr[$v[0]] = isset($v[1]) ? $v[1] : '';
             }
         }
@@ -108,20 +108,18 @@ class Request
      * 获取客户端IP
      * @return string
      */
-    function getClientIP()
+    public function getClientIP()
     {
-        if (isset($this->server["HTTP_CLIENT_IP"]) and strcasecmp($this->server["HTTP_CLIENT_IP"], "unknown")) {
-            return $this->server["HTTP_CLIENT_IP"];
+        if (isset($this->server['HTTP_CLIENT_IP']) && strcasecmp($this->server['HTTP_CLIENT_IP'], 'unknown')) {
+            return $this->server['HTTP_CLIENT_IP'];
         }
-        if (isset($this->server["HTTP_X_FORWARDED_FOR"]) and strcasecmp($this->server["HTTP_X_FORWARDED_FOR"], "unknown"))
-        {
-            return $this->server["HTTP_X_FORWARDED_FOR"];
+        if (isset($this->server['HTTP_X_FORWARDED_FOR']) && strcasecmp($this->server['HTTP_X_FORWARDED_FOR'], 'unknown')) {
+            return $this->server['HTTP_X_FORWARDED_FOR'];
         }
-        if (isset($this->server["REMOTE_ADDR"]))
-        {
-            return $this->server["REMOTE_ADDR"];
+        if (isset($this->server['REMOTE_ADDR'])) {
+            return $this->server['REMOTE_ADDR'];
         }
-        return "";
+        return '';
     }
 
     /**
@@ -131,32 +129,32 @@ class Request
     public function getBrowser()
     {
         $sys = $_SERVER['HTTP_USER_AGENT'];
-        if (stripos($sys, "Firefox/")) {
+        if (stripos($sys, 'Firefox/')) {
             preg_match("/Firefox\/([^;)]+)+/i", $sys, $browser);
-            $exp = ["Firefox", $browser[1]];
-        } elseif (stripos($sys, "Maxthon")) {
+            $exp = ['Firefox', $browser[1]];
+        } elseif (stripos($sys, 'Maxthon')) {
             preg_match("/Maxthon\/([\d\.]+)/", $sys, $browser);
-            $exp = ["傲游", $browser[1]];
-        } elseif (stripos($sys, "MSIE")) {
+            $exp = ['傲游', $browser[1]];
+        } elseif (stripos($sys, 'MSIE')) {
             preg_match("/MSIE\s+([^;)]+)+/i", $sys, $browser);
-            $exp = ["IE", $browser[1]];
-        } elseif (stripos($sys, "OPR")) {
+            $exp = ['IE', $browser[1]];
+        } elseif (stripos($sys, 'OPR')) {
             preg_match("/OPR\/([\d\.]+)/", $sys, $browser);
-            $exp = ["Opera", $browser[1]];
-        } elseif (stripos($sys, "Edge")) {
+            $exp = ['Opera', $browser[1]];
+        } elseif (stripos($sys, 'Edge')) {
             preg_match("/Edge\/([\d\.]+)/", $sys, $browser);
-            $exp = ["Edge", $browser[1]];
-        } elseif (stripos($sys, "Chrome")) {
+            $exp = ['Edge', $browser[1]];
+        } elseif (stripos($sys, 'Chrome')) {
             preg_match("/Chrome\/([\d\.]+)/", $sys, $browser);
-            $exp = ["Chrome", $browser[1]];
+            $exp = ['Chrome', $browser[1]];
         } elseif (stripos($sys, 'rv:') && stripos($sys, 'Gecko')) {
             preg_match("/rv:([\d\.]+)/", $sys, $browser);
-            $exp = ["IE", $browser[1]];
-        } elseif (stripos($sys, "Safari")) {
+            $exp = ['IE', $browser[1]];
+        } elseif (stripos($sys, 'Safari')) {
             preg_match("/Safari:([\d\.]+)/", $sys, $browser);
-            $exp = ["Safari", $browser[1]];
+            $exp = ['Safari', $browser[1]];
         } else {
-            $exp = ["Unkown", ""];
+            $exp = ['Unkown', ''];
         }
         return $exp[0] . '(' . $exp[1] . ')';
     }
@@ -168,9 +166,9 @@ class Request
     public function getOS()
     {
         $agent = $_SERVER['HTTP_USER_AGENT'];
-        if(strpos($agent, 'iphone') || strpos($agent, 'ipad')) {
+        if (strpos($agent, 'iphone') || strpos($agent, 'ipad')) {
             $os = 'ios';
-        } elseif(strpos($agent, 'android')) {
+        } elseif (strpos($agent, 'android')) {
             $os = 'android';
         } elseif (preg_match('/win/i', $agent) && strpos($agent, '95')) {
             $os = 'Windows 95';
@@ -243,5 +241,4 @@ class Request
         header("Content-type: $mime");
         header("Content-Disposition: attachment; filename=$filename");
     }
-
 }

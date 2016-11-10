@@ -1,10 +1,10 @@
 <?php
-$log['master'] = array(
-    'type' => 'FileLog',
+$log['master'] = [
+    'type'     => 'FileLog',
     // 'file' => WEBPATH . '/logs/app.log',
-    'dir'  => WEB_PATH . '/logs/',
-    'date' => true,
+    'dir'      => WEB_PATH . '/logs/',
+    'date'     => true,
     'cut_file' => true,
-);
+];
 
 return $log;

@@ -3,13 +3,12 @@ namespace Event;
 
 class SendMailEvent implements EventInterface
 {
-
     public $transport;
     public $mailer;
     public $message;
     public $data;
     public $error = false;
-    public $log = false;
+    public $log   = false;
     public $password;
 
     /**
@@ -26,32 +25,32 @@ class SendMailEvent implements EventInterface
             $this->password = $this->data['password'];
         } else {
             //动态获取密码
-            $redisPasswd = new \App\Controller\MailPasswd();
+            $redisPasswd    = new \App\Controller\MailPasswd();
             $this->password = $redisPasswd->getEmailPasswd($this->data['sendMail']);
         }
 
-        if(!$this->sendMail()){  //如果发送不成功, 则存入错误数据库
+        if (!$this->sendMail()) { //如果发送不成功, 则存入错误数据库
             $model = Model('MailFailed');
-            $id = $model->put([
-                'appid'     =>  'news',
-                'senduser'  =>  $this->data['sendMail'],
-                'errmsg'    =>  $this->error,
-                'content'   =>  $data,
-                'uptime'    =>  time()
+            $id    = $model->put([
+                'appid'    => 'news',
+                'senduser' => $this->data['sendMail'],
+                'errmsg'   => $this->error,
+                'content'  => $data,
+                'uptime'   => time(),
             ]);
-            if(!$id) {
+            if (!$id) {
                 $this->log()->error($model->dbs->db->errorInfo());
             }
         }
 
-        if($this->log){
+        if ($this->log) {
             $this->log()->flush();
         }
     }
 
     public function log()
     {
-        if(!$this->log){
+        if (!$this->log) {
             $this->log = \Swoole::$php->log;
         }
         return $this->log;
@@ -68,11 +67,10 @@ class SendMailEvent implements EventInterface
             $this->setAttach($this->data['attach']);
         }
 
-        try{
+        try {
             $res = $this->mailer->send($this->message);
-        }
-        catch (\Swift_TransportException $e){
-            $res = false;
+        } catch (\Swift_TransportException $e) {
+            $res         = false;
             $this->error = $e->getMessage();
             $this->log()->error($this->error);
         }
@@ -87,7 +85,7 @@ class SendMailEvent implements EventInterface
         $this->transport = \Swift_SmtpTransport::newInstance('smtp.qq.com', 25);
         $this->transport->setUsername($this->data['sendMail']);
         $this->transport->setPassword($this->password);
-        $this->mailer = \Swift_Mailer::newInstance($this->transport);
+        $this->mailer  = \Swift_Mailer::newInstance($this->transport);
         $this->message = \Swift_Message::newInstance();
     }
 
@@ -138,12 +136,11 @@ class SendMailEvent implements EventInterface
      */
     protected function setAttach($file)
     {
-        $filePath = WEBPATH.'/public/'.$file;
-        if(!is_file($filePath)) {
+        $filePath = WEBPATH . '/public/' . $file;
+        if (!is_file($filePath)) {
             $this->error = true;
             return false;
         }
         $this->message->attach(\Swift_Attachment::fromPath($filePath)->setFilename($file));
     }
-
 }

@@ -13,18 +13,18 @@ class SelectDB
     static $error_call = '';
     static $allow_regx = '#^([a-z0-9\(\)\._=\-\+\*\`\s\'\",]+)$#i';
 
-    public $table = '';
-    public $primary = 'id';
-    public $select = '*';
-    public $sql = '';
-    public $limit = '';
-    public $where = '';
-    public $order = '';
-    public $group = '';
-    public $use_index = '';
-    public $having = '';
-    public $join = '';
-    public $union = '';
+    public $table      = '';
+    public $primary    = 'id';
+    public $select     = '*';
+    public $sql        = '';
+    public $limit      = '';
+    public $where      = '';
+    public $order      = '';
+    public $group      = '';
+    public $use_index  = '';
+    public $having     = '';
+    public $join       = '';
+    public $union      = '';
     public $for_update = '';
 
     public $debug = false;
@@ -35,11 +35,11 @@ class SelectDB
     public $result;
 
     //Union联合查询
-    private $if_union = false;
+    private $if_union     = false;
     private $union_select = '';
 
     //Join连接表
-    private $if_join = false;
+    private $if_join          = false;
     private $if_add_tablename = false;
 
     protected $extraParmas = [];
@@ -54,10 +54,10 @@ class SelectDB
     private $count_fields = '*';
 
     public $page_size = 10;
-    public $num = 0;
-    public $pages = 0;
-    public $page = 0;
-    public $pager = null;
+    public $num       = 0;
+    public $pages     = 0;
+    public $page      = 0;
+    public $pager     = null;
 
     public $auto_cache = false;
 
@@ -72,29 +72,26 @@ class SelectDB
      */
     public $db;
 
-    function __construct()
-    {
-
-    }
+    public function __construct() {}
 
     /**
      * 初始化，select的值，参数$where可以指定初始化哪一项
      * @param $what
      */
-    function init($what = '')
+    public function init($what = '')
     {
-        if($what == '') {
-            $this->table='';
-            $this->primary='id';
-            $this->select='*';
-            $this->sql='';
-            $this->limit='';
-            $this->where='';
-            $this->order='';
-            $this->group='';
-            $this->use_index='';
-            $this->join='';
-            $this->union='';
+        if ($what == '') {
+            $this->table     = '';
+            $this->primary   = 'id';
+            $this->select    = '*';
+            $this->sql       = '';
+            $this->limit     = '';
+            $this->where     = '';
+            $this->order     = '';
+            $this->group     = '';
+            $this->use_index = '';
+            $this->join      = '';
+            $this->union     = '';
         } else {
             $this->$what = '';
         }
@@ -105,10 +102,10 @@ class SelectDB
      * @param $field
      * @param $_where
      */
-    function equal($field, $_where)
+    public function equal($field, $_where)
     {
-        if ($_where instanceof SelectDB) {
-            $where = $field. '=(' . $_where->getsql() . ')';
+        if ($_where instanceof self) {
+            $where = $field . '=(' . $_where->getsql() . ')';
         } else {
             $where = "`$field`='$_where'";
         }
@@ -119,12 +116,12 @@ class SelectDB
      * 指定表名，可以使用table1,table2
      * @param $table
      */
-    function from($table)
+    public function from($table)
     {
-        if (strpos($table,"`") === false) {
-            $this->table= "`".$table."`";
+        if (strpos($table, '`') === false) {
+            $this->table = '`' . $table . '`';
         } else {
-            $this->table=$table;
+            $this->table = $table;
         }
     }
 
@@ -135,12 +132,12 @@ class SelectDB
      * @param $force
      * @return null
      */
-    function select($select, $force = false)
+    public function select($select, $force = false)
     {
         if (is_array($select)) {
             $select = implode(',', $select);
         }
-        if ($this->select == "*" || $force) {
+        if ($this->select == '*' || $force) {
             $this->select = $select;
         } else {
             $this->select = $this->select . ',' . $select;
@@ -152,12 +149,12 @@ class SelectDB
      * @param $where
      * @return null
      */
-    function where($where)
+    public function where($where)
     {
-        if ($this->where == "") {
-            $this->where = "where " . $where;
+        if ($this->where == '') {
+            $this->where = 'where ' . $where;
         } else {
-            $this->where = $this->where . " and " . $where;
+            $this->where = $this->where . ' and ' . $where;
         }
     }
 
@@ -166,7 +163,7 @@ class SelectDB
      * @param $field
      * @return null
      */
-    function useIndex($field)
+    public function useIndex($field)
     {
         self::sql_safe($field);
         $this->use_index = "use index($field)";
@@ -178,7 +175,7 @@ class SelectDB
      * @param $like
      * @return null
      */
-    function like($field,$like)
+    public function like($field, $like)
     {
         self::sql_safe($field);
         $this->where("`{$field}` like '{$like}'");
@@ -189,12 +186,12 @@ class SelectDB
      * @param $where
      * @return null
      */
-    function orwhere($where)
+    public function orwhere($where)
     {
-        if ($this->where == "") {
-            $this->where = "where " . $where;
+        if ($this->where == '') {
+            $this->where = 'where ' . $where;
         } else {
-            $this->where = $this->where . " or " . $where;
+            $this->where = $this->where . ' or ' . $where;
         }
     }
 
@@ -203,14 +200,14 @@ class SelectDB
      * @param $limit
      * @return null
      */
-    function limit($limit)
+    public function limit($limit)
     {
         if (!empty($limit)) {
             $_limit = explode(',', $limit, 2);
             if (count($_limit) == 2) {
-                $this->limit = 'limit ' . (int)$_limit[0] . ',' . (int)$_limit[1];
+                $this->limit = 'limit ' . (int) $_limit[0] . ',' . (int) $_limit[1];
             } else {
-                $this->limit = "limit " . (int)$limit;
+                $this->limit = 'limit ' . (int) $limit;
             }
         } else {
             $this->limit = '';
@@ -222,7 +219,7 @@ class SelectDB
      * @param $order
      * @return null
      */
-    function order($order)
+    public function order($order)
     {
         if (!empty($order)) {
             self::sql_safe($order);
@@ -237,7 +234,7 @@ class SelectDB
      * @param $group
      * @return null
      */
-    function group($group)
+    public function group($group)
     {
         if (!empty($group)) {
             self::sql_safe($group);
@@ -252,7 +249,7 @@ class SelectDB
      * @param $having
      * @return null
      */
-    function having($having)
+    public function having($having)
     {
         if (!empty($having)) {
             $this->having = "HAVING $having";
@@ -267,7 +264,7 @@ class SelectDB
      * @param $ins
      * @return null
      */
-    function in($field, $ins)
+    public function in($field, $ins)
     {
         if (is_array($ins)) {
             $ins = implode(',', $ins);
@@ -284,7 +281,7 @@ class SelectDB
      * @param $ins
      * @return null
      */
-    function notin($field,$ins)
+    public function notin($field, $ins)
     {
         if (is_array($ins)) {
             $ins = implode(',', $ins);
@@ -301,9 +298,9 @@ class SelectDB
      * @param $on
      * @return null
      */
-    function join($table_name,$on)
+    public function join($table_name, $on)
     {
-        $this->join.="INNER JOIN `{$table_name}` ON ({$on})";
+        $this->join .= "INNER JOIN `{$table_name}` ON ({$on})";
     }
 
     /**
@@ -312,9 +309,9 @@ class SelectDB
      * @param $on
      * @return null
      */
-    function leftjoin($table_name,$on)
+    public function leftjoin($table_name, $on)
     {
-        $this->join.="LEFT JOIN `{$table_name}` ON ({$on})";
+        $this->join .= "LEFT JOIN `{$table_name}` ON ({$on})";
     }
 
     /**
@@ -323,9 +320,9 @@ class SelectDB
      * @param $on
      * @return null
      */
-    function rightjoin($table_name,$on)
+    public function rightjoin($table_name, $on)
     {
-        $this->join.="RIGHT JOIN `{$table_name}` ON ({$on})";
+        $this->join .= "RIGHT JOIN `{$table_name}` ON ({$on})";
     }
 
     /**
@@ -333,9 +330,9 @@ class SelectDB
      * @param $pagesize
      * @return null
      */
-    function pagesize($pagesize)
+    public function pagesize($pagesize)
     {
-        $this->page_size = (int)$pagesize;
+        $this->page_size = (int) $pagesize;
     }
 
     /**
@@ -343,9 +340,9 @@ class SelectDB
      * @param $page
      * @return null
      */
-    function page($page)
+    public function page($page)
     {
-        $this->page = (int)$page;
+        $this->page = (int) $page;
     }
 
     /**
@@ -353,7 +350,7 @@ class SelectDB
      * @param $id
      * @return null
      */
-    function id($id)
+    public function id($id)
     {
         $this->where("`{$this->primary}` = '$id'");
     }
@@ -362,13 +359,13 @@ class SelectDB
      * 启用缓存
      * @param $params
      */
-    function cache($params = true)
+    public function cache($params = true)
     {
         if ($params === false) {
             $this->enableCache = false;
         } else {
             $this->cacheOptions = $params;
-            $this->enableCache = true;
+            $this->enableCache  = true;
         }
     }
 
@@ -376,10 +373,10 @@ class SelectDB
      * 产生分页
      * @return null
      */
-    function paging()
+    public function paging()
     {
         $this->num = $this->count();
-        $offset = ($this->page - 1) * $this->page_size;
+        $offset    = ($this->page - 1) * $this->page_size;
         if ($offset < 0) {
             $offset = 0;
         }
@@ -400,7 +397,7 @@ class SelectDB
      * @param $sql_sub
      * @throws SQLException
      */
-    static function sql_safe($sql_sub)
+    public static function sql_safe($sql_sub)
     {
         if (!preg_match(self::$allow_regx, $sql_sub)) {
             if (self::$error_call === '') {
@@ -416,11 +413,11 @@ class SelectDB
      * @param $ifreturn
      * @return string | null
      */
-    function getsql($ifreturn = true)
+    public function getsql($ifreturn = true)
     {
         $this->sql = "select {$this->select} from {$this->table}";
         $this->sql .= implode(' ',
-            [   $this->join,
+            [$this->join,
                 $this->use_index,
                 $this->where,
                 $this->union,
@@ -440,10 +437,10 @@ class SelectDB
         }
     }
 
-    function raw_put($params)
+    public function raw_put($params)
     {
         foreach ($params as $array) {
-            if (isset($array[0]) and isset($array[1]) and count($array) == 2) {
+            if (isset($array[0]) && isset($array[1]) && count($array) == 2) {
                 $this->_call($array[0], $array[1]);
             } else {
                 $this->raw_put($array);
@@ -455,7 +452,7 @@ class SelectDB
      * 锁定行或表
      * @return null
      */
-    function lock()
+    public function lock()
     {
         $this->for_update = 'for update';
     }
@@ -465,15 +462,17 @@ class SelectDB
      * @param $sql
      * @return null
      */
-    function union($sql)
+    public function union($sql)
     {
         $this->if_union = true;
-        if($sql instanceof SelectDB) {
+        if ($sql instanceof self) {
             $this->union_select = $sql->select;
-            $sql->select = '{#union_select#}';
-            $this->union = 'UNION ('.$sql->getsql(true).')';
+            $sql->select        = '{#union_select#}';
+            $this->union        = 'UNION (' . $sql->getsql(true) . ')';
+        } else {
+            $this->union = 'UNION (' . $sql . ')';
         }
-        else $this->union = 'UNION ('.$sql.')';
+
     }
 
     // /**
@@ -572,5 +571,4 @@ class SelectDB
 
 class SQLException extends \Exception
 {
-
 }

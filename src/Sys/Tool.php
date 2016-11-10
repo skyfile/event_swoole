@@ -2,18 +2,18 @@
 namespace Sys;
 
 /**
-* 工具类
-*/
+ * 工具类
+ */
 class Tool
 {
-    const WEEK_TWO = '周';
+    const WEEK_TWO   = '周';
     const WEEK_THREE = '星期';
 
-    static public $url_key_join = '=';
-    static public $url_param_join = '&';
-    static public $url_prefix = '';
-    static public $url_add_end = '';
-    static public $number = array('〇','一','二','三','四','五','六','七','八','九');
+    public static $url_key_join   = '=';
+    public static $url_param_join = '&';
+    public static $url_prefix     = '';
+    public static $url_add_end    = '';
+    public static $number         = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
 
     /**
      * 数字转星期
@@ -21,7 +21,7 @@ class Tool
      * @param  boolean $two [description]
      * @return [type]       [description]
      */
-    static public function num2week($num, $two = true)
+    public static function num2week($num, $two = true)
     {
         return ($two ? self::WEEK_TWO : self::WEEK_THREE) . ($num == '6' ? '日' : self::num2han($num + 1));
     }
@@ -31,9 +31,9 @@ class Tool
      * @param $num_str
      * @return mixed
      */
-    static public function num2han($num_str)
+    public static function num2han($num_str)
     {
-        return str_replace(range(0,9),self::$number,$num_str);
+        return str_replace(range(0, 9), self::$number, $num_str);
     }
 
     /**
@@ -41,7 +41,7 @@ class Tool
      * @param  [type] $dir [description]
      * @return [type]      [description]
      */
-    static public function scandir($dir)
+    public static function scandir($dir)
     {
         if (function_exists('scandir')) {
             $files = scandir($dir);
@@ -70,10 +70,13 @@ class Tool
      * @param  boolean $exclusive [description]
      * @return [type]             [description]
      */
-    static public function readFile($file, $exclusive = false)
+    public static function readFile($file, $exclusive = false)
     {
         $fp = fopen($file, 'r');
-        if (!$fp) return false;
+        if (!$fp) {
+            return false;
+        }
+
         $lockType = $exclusive ? LOCK_EX : LOCK_SH;
         if (flock($fp, $lockType) === false) {
             fclose($fp);
@@ -91,7 +94,7 @@ class Tool
      * @param $string
      * @return mixed
      */
-    static public function endchar($string)
+    public static function endchar($string)
     {
         return $string[strlen($string) - 1];
     }
@@ -101,16 +104,16 @@ class Tool
      * @param string $url
      * @return array $return
      */
-    static public function uri($url)
+    public static function uri($url)
     {
-        $res = parse_url($url);
+        $res                = parse_url($url);
         $return['protocol'] = $res['scheme'];
-        $return['host'] = $res['host'];
-        $return['port'] = $res['port'];
-        $return['user'] = $res['user'];
-        $return['pass'] = $res['pass'];
-        $return['path'] = $res['path'];
-        $return['id'] = $res['fragment'];
+        $return['host']     = $res['host'];
+        $return['port']     = $res['port'];
+        $return['user']     = $res['user'];
+        $return['pass']     = $res['pass'];
+        $return['path']     = $res['path'];
+        $return['id']       = $res['fragment'];
         parse_str($res['query'], $return['params']);
         return $return;
     }
@@ -120,10 +123,10 @@ class Tool
      * @param $datetime
      * @return unknown_type
      */
-    static public function howLongAgo($datetime)
+    public static function howLongAgo($datetime)
     {
         $timestamp = strtotime($datetime);
-        $seconds = time();
+        $seconds   = time();
 
         $time = date('Y', $seconds) - date('Y', $timestamp);
         if ($time > 0) {
@@ -165,7 +168,7 @@ class Tool
      * @param $urls
      * @return string
      */
-    static public function combineQuery($urls)
+    public static function combineQuery($urls)
     {
         $url = [];
         foreach ($urls as $k => $v) {
@@ -182,10 +185,13 @@ class Tool
      * @param  [type] $array [description]
      * @return [type]        [description]
      */
-    static public function urlAppend($url, $array)
+    public static function urlAppend($url, $array)
     {
-        if (!is_array($array)) return false;
-        $tip = (strpos($url, '?') === false) ? '?' : '&';
+        if (!is_array($array)) {
+            return false;
+        }
+
+        $tip   = (strpos($url, '?') === false) ? '?' : '&';
         $query = [];
         foreach ($array as $k => $v) {
             $query[] = $k . self::$url_key_join . urlencode($v);
@@ -200,10 +206,12 @@ class Tool
      * @param $ignore
      * @return string
      */
-    static function urlMerge($key, $value, $ignore = null, $urls = null)
+    public static function urlMerge($key, $value, $ignore = null, $urls = null)
     {
         $url = [];
-        if ($urls === null) $urls = $_GET;
+        if ($urls === null) {
+            $urls = $_GET;
+        }
 
         $urls = array_merge($urls, array_combine(explode(',', $key), explode(',', $value)));
         if ($ignore !== null) {
@@ -233,7 +241,7 @@ class Tool
      * @param $data
      * @return $data
      */
-    static public function arrayIconv($in_charset, $out_charset, $data)
+    public static function arrayIconv($in_charset, $out_charset, $data)
     {
         if (is_array($data)) {
             foreach ($data as $key => $value) {
@@ -253,11 +261,11 @@ class Tool
      * @param $array
      * @return unknown_type
      */
-    static public function arrayFullness($array)
+    public static function arrayFullness($array)
     {
         $nulls = 0;
         foreach ($array as $v) {
-            if (empty($v) or intval($v) < 0) {
+            if (empty($v) || intval($v) < 0) {
                 $nulls++;
             }
         }
@@ -270,10 +278,10 @@ class Tool
      * @param int $birth_date
      * @return string
      */
-    static public function getConstellation($birth_month, $birth_date)
+    public static function getConstellation($birth_month, $birth_date)
     {
         //判断的时候，为避免出现1和true的疑惑，或是判断语句始终为真的问题，这里统一处理成字符串形式
-        $birth_month = strval($birth_month);
+        $birth_month        = strval($birth_month);
         $constellation_name = ['水瓶座', '双鱼座', '白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座'];
         if ($birth_date <= 22) {
             if ('1' !== $birth_month) {
@@ -292,7 +300,7 @@ class Tool
      * @param int $birth_year
      * @return string
      */
-    static function getAnimal($birth_year, $format = '1')
+    public static function getAnimal($birth_year, $format = '1')
     {
         //1900年是子鼠年
         if ($format == '2') {
@@ -315,11 +323,11 @@ class Tool
      * @param int $birth_date
      * @return int
      */
-    static public function getAge($birth_year, $birth_month, $birth_date)
+    public static function getAge($birth_year, $birth_month, $birth_date)
     {
-        $full_age = 0; //周岁，该变量放着，根据具体情况可以随时修改
-        $now_year = date('Y', time());
-        $now_date_num = date('z', time()); //该年份中的第几天
+        $full_age       = 0; //周岁，该变量放着，根据具体情况可以随时修改
+        $now_year       = date('Y', time());
+        $now_date_num   = date('z', time()); //该年份中的第几天
         $birth_date_num = date('z', mktime(0, 0, 0, $birth_month, $birth_date, $birth_year));
 
         if ($now_date_num - $birth_date_num > 0) {
@@ -328,14 +336,14 @@ class Tool
             $full_age = $now_year - $birth_year - 1;
         }
 
-        return $full_age + 1;;
+        return $full_age + 1;
     }
 
     /**
      * 发送一个UDP包
      * @return unknown_type
      */
-    static public function sendUDP($server_ip, $server_port, $data, $timeout = 30)
+    public static function sendUDP($server_ip, $server_port, $data, $timeout = 30)
     {
         $client = stream_socket_client("udp://$server_ip:$server_port", $errno, $errstr, $timeout);
         if (!$client) {
@@ -352,7 +360,7 @@ class Tool
      * @param $tdir目标目录名(不带/)
      * @return
      */
-    static public function dirCopy($fdir, $tdir)
+    public static function dirCopy($fdir, $tdir)
     {
         if (is_dir($fdir)) {
             if (!is_dir($tdir)) {
@@ -360,8 +368,8 @@ class Tool
             }
             $handle = opendir($fdir);
             while (false !== ($filename = readdir($handle))) {
-                if ($filename != "." && $filename != "..") {
-                    self::dir_copy($fdir . "/" . $filename, $tdir . "/" . $filename);
+                if ($filename != '.' && $filename != '..') {
+                    self::dir_copy($fdir . '/' . $filename, $tdir . '/' . $filename);
                 }
             }
             closedir($handle);
@@ -377,9 +385,12 @@ class Tool
      * @param  string $file [description]
      * @return [type]       [description]
      */
-    static public function fileAppend($log, $file = '')
+    public static function fileAppend($log, $file = '')
     {
-        if (empty($file)) return false;
+        if (empty($file)) {
+            return false;
+        }
+
         if (!is_string($log)) {
             $log = var_export($log, true);
         }
@@ -395,14 +406,14 @@ class Tool
      * @param  integer $round [description]
      * @return [type]         [description]
      */
-    static public function getHumanSize($n, $round = 3)
+    public static function getHumanSize($n, $round = 3)
     {
         if ($n > 1024 * 1024 * 1024) {
-            return round($n / (1024 * 1024 * 1024), $round) . "G";
+            return round($n / (1024 * 1024 * 1024), $round) . 'G';
         } elseif ($n > 1024 * 1024) {
-            return round($n / (1024 * 1024), $round) . "M";
+            return round($n / (1024 * 1024), $round) . 'M';
         } elseif ($n > 1024) {
-            return round($n / (1024), $round) . "K";
+            return round($n / (1024), $round) . 'K';
         } else {
             return $n;
         }
@@ -413,14 +424,14 @@ class Tool
      * @param  [type] $func [description]
      * @return [type]       [description]
      */
-    static public function showCost($func)
+    public static function showCost($func)
     {
         $_t = microtime(true);
         $_m = memory_get_usage(true);
         call_user_func($func);
         $t = round((microtime(true) - $_t) * 1000, 3);
         $m = memory_get_usage(true) - $_m;
-        echo "cost Time: {$t}ms, Memory=".self::getHumanSize($m)."\n";
+        echo "cost Time: {$t}ms, Memory=" . self::getHumanSize($m) . "\n";
     }
 
     /**
@@ -428,11 +439,11 @@ class Tool
      * @param  string $value [description]
      * @return [type]        [description]
      */
-    static public function toUnderScore($str)
+    public static function toUnderScore($str)
     {
         $arr = [];
         $len = strlen($str);
-        for ($i=0; $i < $len; $i++) {
+        for ($i = 0; $i < $len; $i++) {
             $lower = strtolower($str[$i]);
             if ($str[$i] != $lower && $i > 0) {
                 $arr[] = '_';
@@ -447,9 +458,9 @@ class Tool
      * @param  [type] $str [description]
      * @return [type]      [description]
      */
-    static public function toCamelCase($str)
+    public static function toCamelCase($str)
     {
-      return implode('', array_map('ucfirst', array_map('strtolower', explode('_', $str))));
+        return implode('', array_map('ucfirst', array_map('strtolower', explode('_', $str))));
     }
 
     /**
@@ -457,20 +468,20 @@ class Tool
      * @param  array  $servers [description]
      * @return array          [description]
      */
-    static public function getServer(array $servers)
+    public static function getServer(array $servers)
     {
         $weight = 0;
         //移除不在线的节点
         foreach ($servers as $k => $svr) {
             //节点已掉线
-            if (!empty($svr['status']) and $svr['status'] == 'offline') {
+            if (!empty($svr['status']) && $svr['status'] == 'offline') {
                 unset($servers[$k]);
             }
             $weight += $svr['weight'];
         }
 
         //计算权重并随机选择一台机器
-        $use = rand(0, $weight - 1);
+        $use    = rand(0, $weight - 1);
         $weight = 0;
         foreach ($servers as $k => $svr) {
             //默认100权重
@@ -492,12 +503,11 @@ class Tool
      * @param  [type] $filePath [description]
      * @return [type]           [description]
      */
-    static public function checkDir ($filePath)
+    public static function checkDir($filePath)
     {
         if (@is_readable($filePath) && @is_writable($filePath)) {
             return true;
         }
         return false;
     }
-
 }

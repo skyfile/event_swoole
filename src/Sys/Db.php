@@ -2,35 +2,35 @@
 namespace Sys;
 
 /**
-* 数据库
-*/
+ * 数据库
+ */
 class Db
 {
     const TYPE_MYSQL   = 1;
-    const TYPE_MYSQLi  = 2;
+    const TYPE_MYSQLI  = 2;
     const TYPE_PDO     = 3;
-    const TYPE_CLMysql = 4;
+    const TYPE_CLMYSQL = 4;
 
     const DB_MASTER = 1;
-    const DB_SLAVE = 2;
+    const DB_SLAVE  = 2;
 
-    const CACHE_PREFIX = 'sys_selectdb_';
+    const CACHE_PREFIX   = 'sys_selectdb_';
     const CACHE_LIFETIME = 300;
 
-    public $debug = false;
-    public $read_times = 0;
+    public $debug       = false;
+    public $read_times  = 0;
     public $write_times = 0;
 
     static $obj;
-    public $db = null;
-    public $db_apt = null;
-    public $forceMaster = true;    //强制发送主库
-    public $call_by = 'func';
+    public $db          = null;
+    public $db_apt      = null;
+    public $forceMaster = true; //强制发送主库
+    public $call_by     = 'func';
 
     protected $config;
-    protected $masterDB;    //主库
-    protected $slaveDB;     //从库
-    protected $table;       //数据表
+    protected $masterDB; //主库
+    protected $slaveDB;  //从库
+    protected $table;    //数据表
 
     protected $enableCache;
     protected $cacheOptions = [];
@@ -43,15 +43,15 @@ class Db
             $this->forceMaster = false;
         } else {
             $this->config['use_proxy'] = false;
-            $this->config['slaves'] = [];
+            $this->config['slaves']    = [];
         }
     }
 
-    static public function getInstance($key)
+    public static function getInstance($key)
     {
         if (!self::$obj) {
             $config = \Sys::$obj->config['db'];
-            if(!isset($config[$key]) || empty($config[$key])){
+            if (!isset($config[$key]) || empty($config[$key])) {
                 throw new \Exception("db->{$key} config is not fund.");
             }
             self::$obj = new self($config[$key]);
@@ -67,7 +67,7 @@ class Db
     {
         $this->db_apt = new SelectDB();
         //设置表名
-        $this->db_apt->from( $this->getTable() );
+        $this->db_apt->from($this->getTable());
 
         if ($this->debug) {
             $this->db_apt->debug = true;
@@ -124,7 +124,7 @@ class Db
             unset($config['slaves'], $config['use_proxy']);
             $config['host'] = $server['host'];
             $config['port'] = $server['port'];
-            $this->slaveDB = $this->_DBInit($config);
+            $this->slaveDB  = $this->_DBInit($config);
         }
         return $this->slaveDB;
     }
@@ -183,7 +183,7 @@ class Db
      */
     public function getTable()
     {
-        if(!$this->table) {
+        if (!$this->table) {
             trigger_error('SelectDB param error, Table Name is empty!!');
             return false;
         }
@@ -263,12 +263,12 @@ class Db
      * @param $field
      * @return array
      */
-    function getone($field = '')
+    public function getone($field = '')
     {
         $this->limit('1');
-        if ($this->db_apt->auto_cache or !empty($cache_id)) {
+        if ($this->db_apt->auto_cache || !empty($cache_id)) {
             $cache_key = empty($cache_id) ? self::CACHE_PREFIX . '_one_' . md5($this->sql) : self::CACHE_PREFIX . '_all_' . $cache_id;
-            $record = \Sys::$obj->redis->get($cache_key);
+            $record    = \Sys::$obj->redis->get($cache_key);
             if (empty($record)) {
                 if ($this->db_apt->is_execute == 0) {
                     $this->exeucte();
@@ -284,7 +284,7 @@ class Db
         }
 
         if ($field === '') {
-            return $record ?:[];
+            return $record ?: [];
         }
         return isset($record[$field]) ? $record[$field] : '';
     }
@@ -293,7 +293,7 @@ class Db
      * 获取所有记录
      * @return array | bool
      */
-    function getall()
+    public function getall()
     {
         //启用了Cache
         if ($this->enableCache) {
@@ -340,12 +340,12 @@ class Db
 
         if ($this->db_apt->if_union) {
             $sql = str_replace('{#union_select#}', "count({$this->count_fields}) as c", $sql);
-            $c = $this->query($sql)->fetchall();
-            $cc = 0;
+            $c   = $this->query($sql)->fetchall();
+            $cc  = 0;
             foreach ($c as $_c) {
                 $cc += $_c['c'];
             }
-            $count =  intval($cc);
+            $count = intval($cc);
         } else {
             $_c = $this->query($sql);
             if ($_c === false) {
@@ -392,7 +392,7 @@ class Db
             $arr = '';
             foreach ($where as $k => $v) {
                 $value = $this->quote($v);
-                if ($value != '' and $value{0} == '`') {
+                if ($value != '' && $value{0} == '`') {
                     $arr[] = "`$k`=$value";
                 } else {
                     $arr[] = "`$k`='$value'";
@@ -409,18 +409,18 @@ class Db
      * @param $data
      * @return bool
      */
-    function insert($data)
+    public function insert($data)
     {
-        $field = "";
-        $values = "";
+        $field  = '';
+        $values = '';
 
-        foreach($data as $key => $value) {
-            $value = $this->quote($value);
-            $field = $field . "`$key`,";
+        foreach ($data as $key => $value) {
+            $value  = $this->quote($value);
+            $field  = $field . "`$key`,";
             $values = $values . "'$value',";
         }
 
-        $field = substr($field, 0, -1);
+        $field  = substr($field, 0, -1);
         $values = substr($values, 0, -1);
         return $this->query("insert into {$this->table} ($field) values($values)");
     }
@@ -430,12 +430,12 @@ class Db
      * @param $data
      * @return bool
      */
-    function update($data)
+    public function update($data)
     {
-        $update = "";
+        $update = '';
         foreach ($data as $key => $value) {
             $value = $this->quote($value);
-            if ($value != '' and $value{0} == '`') {
+            if ($value != '' && $value{0} == '`') {
                 $update = $update . "`$key`=$value,";
             } else {
                 $update = $update . "`$key`='$value',";
@@ -449,7 +449,7 @@ class Db
      * 删除当前条件下的记录
      * @return bool
      */
-    function delete()
+    public function delete()
     {
         return $this->query("delete from {$this->table} {$this->where} {$this->limit}");
     }
@@ -458,7 +458,7 @@ class Db
      * 获取受影响的行数
      * @return int
      */
-    function rowCount()
+    public function rowCount()
     {
         return $this->getDB()->getAffectedRows();
     }
@@ -489,5 +489,4 @@ class Db
     {
         $this->query('ROLLBACK');
     }
-
 }

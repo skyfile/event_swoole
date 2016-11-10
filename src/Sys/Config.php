@@ -1,20 +1,21 @@
 <?php
 namespace Sys;
+
 /**
-* 配置文件加载类
-*/
+ * 配置文件加载类
+ */
 class Config implements \ArrayAccess
 {
-	public $config;
-	public $config_path;
+    public $config;
+    public $config_path;
 
-	public function setPath($dir)
+    public function setPath($dir)
     {
         $this->config_path[] = $dir;
     }
 
     public function load($index)
-	{
+    {
         foreach ($this->config_path as $path) {
             $filename = $path . '/' . $index . '.php';
             if (is_file($filename)) {
@@ -26,10 +27,11 @@ class Config implements \ArrayAccess
                 }
             }
         }
-	}
+    }
 
-    public function offsetGet($index) {
-    	if (!isset($this->config[$index])) {
+    public function offsetGet($index)
+    {
+        if (!isset($this->config[$index])) {
             $this->load($index);
         }
         return isset($this->config[$index]) ? $this->config[$index] : false;
@@ -49,5 +51,4 @@ class Config implements \ArrayAccess
     {
         return isset($this->config[$index]);
     }
-
 }

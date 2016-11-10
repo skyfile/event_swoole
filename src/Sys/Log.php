@@ -2,8 +2,8 @@
 namespace Sys;
 
 /**
-* 日志类
-*/
+ * 日志类
+ */
 class Log
 {
     static $obj;
@@ -14,11 +14,11 @@ class Log
         if (!isset($config['type'])) {
             $config['type'] = 'FileLog';
         }
-        $class = '\\Sys\\Log\\'.ucfirst($config['type']);
+        $class     = '\\Sys\\Log\\' . ucfirst($config['type']);
         $this->log = new $class($config);
     }
 
-    static public function getInstance($key = 'master')
+    public static function getInstance($key = 'master')
     {
         if (!self::$obj) {
             $config = \Sys::$obj->config['log'];

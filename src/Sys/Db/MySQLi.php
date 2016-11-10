@@ -13,19 +13,18 @@ class MySQLi extends \mysqli
     const DEFAULT_PORT = 3306;
 
     public $debug = false;
-    public $conn = null;
+    public $conn  = null;
     public $config;
 
-    function __construct($db_config)
+    public function __construct($db_config)
     {
-        if (empty($db_config['port']))
-        {
+        if (empty($db_config['port'])) {
             $db_config['port'] = self::DEFAULT_PORT;
         }
         $this->config = $db_config;
     }
 
-    function lastInsertId()
+    public function lastInsertId()
     {
         return $this->insert_id;
     }
@@ -40,24 +39,19 @@ class MySQLi extends \mysqli
      * @param null $socket
      * @return bool
      */
-    function connect($_host = null, $user = null, $password = null, $database = null, $port = null, $socket = null)
+    public function connect($_host = null, $user = null, $password = null, $database = null, $port = null, $socket = null)
     {
         $db_config = &$this->config;
-        $host = $db_config['host'];
-        if (!empty($db_config['persistent']))
-        {
+        $host      = $db_config['host'];
+        if (!empty($db_config['persistent'])) {
             $host = 'p:' . $host;
         }
-        if (isset($db_config['passwd']))
-        {
+        if (isset($db_config['passwd'])) {
             $db_config['password'] = $db_config['passwd'];
         }
-        if (isset($db_config['dbname']))
-        {
+        if (isset($db_config['dbname'])) {
             $db_config['name'] = $db_config['dbname'];
-        }
-        elseif (isset($db_config['database']))
-        {
+        } elseif (isset($db_config['database'])) {
             $db_config['name'] = $db_config['database'];
         }
         parent::connect(
@@ -67,13 +61,11 @@ class MySQLi extends \mysqli
             $db_config['name'],
             $db_config['port']
         );
-        if ($this->connect_errno)
-        {
+        if ($this->connect_errno) {
             trigger_error("mysqli connect to server[$host:{$db_config['port']}] failed: " . mysqli_connect_error(), E_USER_WARNING);
             return false;
         }
-        if (!empty($db_config['charset']))
-        {
+        if (!empty($db_config['charset'])) {
             $this->set_charset($db_config['charset']);
         }
         return true;
@@ -84,9 +76,9 @@ class MySQLi extends \mysqli
      * @param $value
      * @return string
      */
-    function quote($value)
+    public function quote($value)
     {
-        return $this->tryReconnect(array($this, 'escape_string'), array($value));
+        return $this->tryReconnect([$this, 'escape_string'], [$value]);
     }
 
     /**
@@ -98,8 +90,7 @@ class MySQLi extends \mysqli
     {
         $msg = $this->error . "<hr />$sql<hr />\n";
         $msg .= "Server: {$this->config['host']}:{$this->config['port']}. <br/>\n";
-        if ($this->connect_errno)
-        {
+        if ($this->connect_errno) {
             $msg .= "ConnectError[{$this->connect_errno}]: {$this->connect_error}<br/>\n";
         }
         $msg .= "Message: {$this->error} <br/>\n";
@@ -110,23 +101,17 @@ class MySQLi extends \mysqli
     protected function tryReconnect($call, $params)
     {
         $result = false;
-        for ($i = 0; $i < 2; $i++)
-        {
+        for ($i = 0; $i < 2; $i++) {
             $result = @call_user_func_array($call, $params);
-            if ($result === false)
-            {
-                if ($this->errno == 2013 or $this->errno == 2006)
-                {
+            if ($result === false) {
+                if ($this->errno == 2013 || $this->errno == 2006) {
                     $r = $this->checkConnection();
-                    if ($r === true)
-                    {
+                    if ($r === true) {
                         continue;
                     }
-                }
-                else
-                {
+                } else {
                     // Swoole\Error::info(__CLASS__ . " SQL Error", $this->errorMessage($params[0]));
-                    trigger_error(__CLASS__ . " SQL Error ". $this->errorMessage($params[0]));
+                    trigger_error(__CLASS__ . ' SQL Error ' . $this->errorMessage($params[0]));
                     return false;
                 }
             }
@@ -140,16 +125,14 @@ class MySQLi extends \mysqli
      * @param string $sql 执行的SQL语句
      * @return MySQLiRecord | false
      */
-    function query($sql)
+    public function query($sql)
     {
-        $result = $this->tryReconnect(array('parent', 'query'), array($sql));
-        if (!$result)
-        {
-            trigger_error(__CLASS__." SQL Error:". $this->errorMessage($sql) . E_USER_WARNING);
+        $result = $this->tryReconnect(['parent', 'query'], [$sql]);
+        if (!$result) {
+            trigger_error(__CLASS__ . ' SQL Error:' . $this->errorMessage($sql) . E_USER_WARNING);
             return false;
         }
-        if (is_bool($result))
-        {
+        if (is_bool($result)) {
             return $result;
         }
         return new MySQLiRecord($result);
@@ -160,24 +143,24 @@ class MySQLi extends \mysqli
      * @param string $sql 执行的SQL语句
      * @return MySQLiRecord | false
      */
-    function multi_query($sql)
+    public function multi_query($sql)
     {
-        $result = $this->tryReconnect(array('parent', 'multi_query'), array($sql));
+        $result = $this->tryReconnect(['parent', 'multi_query'], [$sql]);
         if (!$result) {
             // Swoole\Error::info(__CLASS__ . " SQL Error", $this->errorMessage($sql));
-            trigger_error(__CLASS__ . " SQL Error: ". $this->errorMessage($sql));
+            trigger_error(__CLASS__ . ' SQL Error: ' . $this->errorMessage($sql));
             return false;
         }
 
-        $result = call_user_func_array(array('parent', 'use_result'), array());
-        $output = array();
+        $result = call_user_func_array(['parent', 'use_result'], []);
+        $output = [];
         while ($row = $result->fetch_assoc()) {
             $output[] = $row;
         }
         $result->free();
 
-        while (call_user_func_array(array('parent', 'more_results'), array()) && call_user_func_array(array('parent', 'next_result'), array())) {
-            $extraResult = call_user_func_array(array('parent', 'use_result'), array());
+        while (call_user_func_array(['parent', 'more_results'], []) && call_user_func_array(['parent', 'next_result'], [])) {
+            $extraResult = call_user_func_array(['parent', 'use_result'], []);
             if ($extraResult instanceof \mysqli_result) {
                 $extraResult->free();
             }
@@ -190,13 +173,12 @@ class MySQLi extends \mysqli
      * @param $sql
      * @return bool|\mysqli_result
      */
-    function queryAsync($sql)
+    public function queryAsync($sql)
     {
-        $result = $this->tryReconnect(array('parent', 'query'), array($sql, MYSQLI_ASYNC));
-        if (!$result)
-        {
+        $result = $this->tryReconnect(['parent', 'query'], [$sql, MYSQLI_ASYNC]);
+        if (!$result) {
             // Swoole\Error::info(__CLASS__." SQL Error", $this->errorMessage($sql));
-            trigger_error(__CLASS__." SQL Error: ". $this->errorMessage($sql));
+            trigger_error(__CLASS__ . ' SQL Error: ' . $this->errorMessage($sql));
             return false;
         }
         return $result;
@@ -207,8 +189,7 @@ class MySQLi extends \mysqli
      */
     protected function checkConnection()
     {
-        if (!@$this->ping())
-        {
+        if (!@$this->ping()) {
             $this->close();
             return $this->connect();
         }
@@ -219,7 +200,7 @@ class MySQLi extends \mysqli
      * 获取错误码
      * @return int
      */
-    function errno()
+    public function errno()
     {
         return $this->errno;
     }
@@ -228,7 +209,7 @@ class MySQLi extends \mysqli
      * 获取受影响的行数
      * @return int
      */
-    function getAffectedRows()
+    public function getAffectedRows()
     {
         return $this->affected_rows;
     }
@@ -237,7 +218,7 @@ class MySQLi extends \mysqli
      * 返回上一个Insert语句的自增主键ID
      * @return int
      */
-    function Insert_ID()
+    public function Insert_ID()
     {
         return $this->insert_id;
     }
@@ -250,38 +231,37 @@ class MySQLiRecord
      */
     public $result;
 
-    function __construct($result)
+    public function __construct($result)
     {
         $this->result = $result;
     }
 
-    function fetch()
+    public function fetch()
     {
         return $this->result->fetch_assoc();
     }
 
-    function fetchall()
+    public function fetchall()
     {
-        $data = array();
-        while ($record = $this->result->fetch_assoc())
-        {
+        $data = [];
+        while ($record = $this->result->fetch_assoc()) {
             $data[] = $record;
         }
         return $data;
     }
 
-    function free()
+    public function free()
     {
         $this->result->free_result();
     }
 
-    function __get($key)
+    public function __get($key)
     {
         return $this->result->$key;
     }
 
-    function __call($func, $params)
+    public function __call($func, $params)
     {
-        return call_user_func_array(array($this->result, $func), $params);
+        return call_user_func_array([$this->result, $func], $params);
     }
 }
