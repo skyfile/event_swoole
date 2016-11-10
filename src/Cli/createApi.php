@@ -11,7 +11,7 @@ class CreateApi
 {
     public $name;
     public $init         = false;
-    public $version      = 1;
+    public $version      = 0;
     public $createFailed = false; //是否创建失败
     public $files        = [];
     public $floor        = 1;
@@ -102,42 +102,62 @@ class CreateApi
      */
     public function del()
     {
-        if (isset($this->opt['name']) && $this->opt['name']->value) {
-            $this->name = \Sys\Tool::toCamelCase($this->opt['name']->value);
-        } elseif (strpos($this->argv[1], '-') !== 0) {
-            $this->name = \Sys\Tool::toCamelCase($this->argv[1]);
-        } else {
-            if (!$this->name) {
-                $this->name = $this->ask_cli('输入指定模块名称: ');
-                if ($this->name == '') {
-                    $this->del();
-                }
-            }
-        }
-
-        if (isset($this->opt['version']) && $this->opt['version']->value) {
-            $this->version = (int) $this->opt['version']->value;
-        } else {
-            if ($this->delAll != 'y') {
-                if ($this->version == 0) {
-                    $this->version = (int) $this->ask_cli('输入指定版本号：V');
-                    # code...
-                }
-                $this->delAll = $this->ask_cli('是否删除整个模块(y/n): ');
-                if ($this->delAll) {
-                    # code...
-                }
-                if ($this->version == 0) {
-                    $this->del();
-                }
+        while (true) {
+            if (isset($this->opt['name']) && $this->opt['name']->value) {
+                $this->name = \Sys\Tool::toCamelCase($this->opt['name']->value);
+            } elseif (strpos($this->argv[1], '-') !== 0) {
+                $this->name = \Sys\Tool::toCamelCase($this->argv[1]);
             } else {
-                $this->version = 0;
+                if (!$this->name) {
+                    $this->name = $this->ask_cli('输入指定模块名称: ');
+                    if ($this->name == '') {
+                        continue;
+                    }
+                }
             }
-        }
-        $dir = BASE_PATH . '/Api/' . \Sys\Tool::toCamelCase($this->name) . ($this->version != 0 ? 'V' . $this->version : '');
-        $this->echo_cli($dir);
-        // return $this->delDirAndFile($dir);
 
+            //判定模块是否存在
+            $modelDir = BASE_PATH . '/Api/' . \Sys\Tool::toCamelCase($this->name);
+            if (!is_dir($modelDir)) {
+                $this->warning_cli("{$this->name} 模块不存在");
+                $this->name = '';
+                continue;
+            }
+
+            //询问是否完整删除或指定版本
+            if (isset($this->opt['version']) && $this->opt['version']->value) {
+                $this->version = (int) $this->opt['version']->value;
+            } else {
+                if ($this->delAll === false) {
+                    $this->delAll = $this->ask_cli('是否删除整个模块(y/n): ');
+                    if ($this->delAll == 'y') {
+                        $this->version = 0;
+                    } else {
+                        $this->version = $this->version ? $this->version : 0;
+                        $this->delAll  = 'n';
+                    }
+                }
+                if ($this->delAll == 'n' && !$this->version) {
+                    $this->version = (int) $this->ask_cli('输入指定版本号：v');
+                    if ($this->version == 0) {
+                        continue;
+                    }
+                }
+            }
+
+            $dir = $modelDir . ($this->version != 0 ? '/V' . $this->version : '');
+            if ($this->delAll == 'n' && !is_dir($dir)) {
+                $this->warning_cli("{$this->name} 模块下 v{$this->version} 版本不存在");
+                $this->version = 0;
+                continue;
+            }
+
+            if ('y' == $this->ask_cli('确定删除?(y/n):')) {
+                $this->echo_cli($dir);
+                $this->delDirAndFile($dir);
+            }
+            break;
+        }
     }
 
     /**
@@ -176,6 +196,8 @@ class CreateApi
         //API版本
         if (isset($this->opt['version']) && $this->opt['version']->value) {
             $this->version = (int) $this->opt['version']->value;
+        } else {
+            $this->version = 1;
         }
 
         $dir = BASE_PATH . '/Api/' . $this->name . '/V' . $this->version;
