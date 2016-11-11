@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f98eaa1a56465cd742fafd54c177f715",
-    "content-hash": "8881acd9bf96eee4368ed364d0ca7fe1",
+    "hash": "2aaa22497a66843a4bca823bedce16c6",
+    "content-hash": "00e5b451347cd5c20640c2fdd3e97eb9",
     "packages": [
         {
-            "name": "c9s/GetOptionKit",
+            "name": "corneltek/getoptionkit",
             "version": "1.2.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/c9s/php-GetOptionKit.git",
+                "url": "https://github.com/c9s/GetOptionKit.git",
                 "reference": "8f99bfb86c9d04acae76a6c0f05e24c89079a2da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packagist.phpcomposer.com/files/c9s/php-GetOptionKit/8f99bfb86c9d04acae76a6c0f05e24c89079a2da.zip",
+                "url": "https://packagist.phpcomposer.com/files/c9s/GetOptionKit/8f99bfb86c9d04acae76a6c0f05e24c89079a2da.zip",
                 "reference": "8f99bfb86c9d04acae76a6c0f05e24c89079a2da",
                 "shasum": ""
             },
@@ -46,7 +46,6 @@
             ],
             "description": "Powerful command-line option toolkit",
             "homepage": "http://github.com/c9s/GetOptionKit",
-            "abandoned": "corneltek/getoptionkit",
             "time": "2013-07-18 12:15:20"
         },
         {
@@ -101,6 +100,67 @@
                 "mailer"
             ],
             "time": "2016-07-08 11:51:25"
+        },
+        {
+            "name": "twig/twig",
+            "version": "v1.27.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twigphp/Twig.git",
+                "reference": "3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://packagist.phpcomposer.com/files/twigphp/Twig/3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97.zip",
+                "reference": "3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.7"
+            },
+            "require-dev": {
+                "symfony/debug": "~2.7",
+                "symfony/phpunit-bridge": "~2.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.27-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Twig_": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Armin Ronacher",
+                    "email": "armin.ronacher@active-4.com",
+                    "role": "Project Founder"
+                },
+                {
+                    "name": "Twig Team",
+                    "homepage": "http://twig.sensiolabs.org/contributors",
+                    "role": "Contributors"
+                }
+            ],
+            "description": "Twig, the flexible, fast, and secure template language for PHP",
+            "homepage": "http://twig.sensiolabs.org",
+            "keywords": [
+                "templating"
+            ],
+            "time": "2016-10-25 19:17:17"
         }
     ],
     "packages-dev": [],

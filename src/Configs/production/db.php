@@ -1,6 +1,6 @@
 <?php
 $db['master'] = [
-    'type'       => Sys\libs\DB::TYPE_MYSQLi,
+    'type'       => Sys\libs\DB::TYPE_MYSQLI,
     'host'       => '127.0.0.1',
     'port'       => 3306,
     'dbms'       => 'mysql',

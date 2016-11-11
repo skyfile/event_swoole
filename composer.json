@@ -10,17 +10,22 @@
             "packagist": false
         },
         {
-            "url": "git@github.com:c9s/GetOptionKit.git",
+            "url": "git@github.com:skyfile/GetOptionKit.git",
             "type": "git"
         },
         {
-            "url": "https://github.com/swiftmailer/swiftmailer.git",
+            "url": "git@github.com:swiftmailer/swiftmailer.git",
+            "type": "git"
+        },
+        {
+            "url": "git@github.com:twigphp/Twig.git",
             "type": "git"
         }
     ],
     "require": {
-        "c9s/GetOptionKit": "1.2.4",
-        "swiftmailer/swiftmailer": "5.4.3"
+        "corneltek/GetOptionKit": "1.2.4",
+        "swiftmailer/swiftmailer": "5.4.3",
+        "twig/twig":"1.27.0"
     },
     "scripts": {}
 }

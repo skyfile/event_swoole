@@ -78,8 +78,8 @@ class CreateApi
         if ($handle = opendir($dirName)) {
             $prefix   = '|' . str_repeat('_', ($this->floor - 1) * 2);
             $showName = explode('/', $dirName);
-            $showName = $prefix . ' ' . end($showName);
-            $this->echo_cli($showName);
+            $showName = $prefix . end($showName);
+            $this->echo_cli($showName, 'green');
             while (false !== ($item = readdir($handle))) {
                 if ($item != '.' && $item != '..') {
                     if (is_dir("$dirName/$item")) {
@@ -87,7 +87,7 @@ class CreateApi
                         $this->getlist("$dirName/$item");
                         $this->floor -= 1;
                     } else {
-                        $this->echo_cli($prefix . '__' . $item);
+                        $this->echo_cli($prefix . '__' . $item . '*');
                     }
                 }
             }
@@ -361,18 +361,29 @@ EOF;
 
     /**
      * 输出
-     * @param  string $str [description]
+     * @param  string $str 内容
+     * @param  string $color 颜色
      * @return [type]      [description]
      */
-    public function echo_cli($str = '')
+    public function echo_cli($str = '', $col = 'blue')
     {
-        fwrite(STDOUT, sprintf("\033[0;34m%s\033[0m", $str . "\n"));
+        $colors = [
+            'red'    => "\033[0;31m%s\033[0m",
+            'green'  => "\033[0;32m%s\033[0m",
+            'blue'   => "\033[0;34m%s\033[0m",
+            'cyan'   => "\033[0;36m%s\033[0m",
+            'purple' => "\033[0;35m%s\033[0m",
+            'brown'  => "\033[0;33m%s\033[0m",
+            'yellow' => "\033[1;33m%s\033[0m",
+        ];
+        $c = isset($colors[$col]) ? $colors[$col] : $colors['blue'];
+        fwrite(STDOUT, sprintf($c, $str . "\n"));
     }
 
     public function __destruct()
     {
         if ($this->createFailed) {
-            // $this->delDirAndFile(BASE_PATH.'/'.$this)
+            $this->delDirAndFile(BASE_PATH . '/Api/' . $this->name . ($this->version ? '/V' . $this->version : ''));
         }
     }
 }

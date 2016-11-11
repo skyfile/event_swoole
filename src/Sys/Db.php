@@ -140,7 +140,7 @@ class Db
             case self::TYPE_MYSQL:
                 $db = new Db\MySQL($db_config);
                 break;
-            case self::TYPE_MYSQLi:
+            case self::TYPE_MYSQLI:
                 $db = new Db\MySQLi($db_config);
                 break;
             case self::TYPE_CLMysql:
