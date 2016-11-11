@@ -70,7 +70,7 @@ class Restfull
             return $this->error("This Protocol [{$this->protocol}] Is Not Right");
         }
         //检查模块
-        $module_dir = BASE_PATH . '/Api/' . $this->module;
+        $module_dir = APP_PATH . '/Api/' . $this->module;
         if (!is_dir($module_dir)) {
             return $this->error("This Module [{$this->module}] Is Not Right");
         }
@@ -80,7 +80,7 @@ class Restfull
             return $this->error("This Version [{$this->version}] Is Not Right");
         }
         //新增顶级域名空间
-        \Sys::addNameSpace('Api', BASE_PATH . '/Api/');
+        \Sys::addNameSpace('Api', APP_PATH . 'Api/');
         $className = '\\Api\\' . $this->module . '\\' . $this->version . '\\' . $this->protocol;
         if (!class_exists($className)) {
             return $this->error("This Api Is Not Exists!! [$className]");

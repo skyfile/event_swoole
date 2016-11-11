@@ -1,4 +1,6 @@
 <?php
+require realpath(__DIR__) . '/cli.php';
+Cli::index(true);
 require realpath(__DIR__ . '/../') . '/Boot/boot.php';
 
 $start = new CreateApi();
@@ -51,9 +53,9 @@ class CreateApi
      */
     public function help()
     {
-        $this->echo_cli();
+        Cli::echo_cli('帮助信息:');
         $this->optionKit->specs->printOptions();
-        $this->echo_cli();
+        Cli::echo_cli();
     }
 
     /**
@@ -70,16 +72,16 @@ class CreateApi
             } else {
                 $this->name = '';
             }
-            $dirName = BASE_PATH . '/Api' . ($this->name ? '/' . $this->name : '');
+            $dirName = APP_PATH . '/Api' . ($this->name ? '/' . $this->name : '');
         }
         if (!is_dir($dirName)) {
-            return $this->warning_cli('没有此目录, 请检查参数');
+            return Cli::warning_cli('没有此目录, 请检查参数');
         }
         if ($handle = opendir($dirName)) {
             $prefix   = '|' . str_repeat('_', ($this->floor - 1) * 2);
             $showName = explode('/', $dirName);
             $showName = $prefix . end($showName);
-            $this->echo_cli($showName, 'green');
+            Cli::echo_cli($showName, 'green');
             while (false !== ($item = readdir($handle))) {
                 if ($item != '.' && $item != '..') {
                     if (is_dir("$dirName/$item")) {
@@ -87,7 +89,7 @@ class CreateApi
                         $this->getlist("$dirName/$item");
                         $this->floor -= 1;
                     } else {
-                        $this->echo_cli($prefix . '__' . $item . '*');
+                        Cli::echo_cli($prefix . '__' . $item . '*');
                     }
                 }
             }
@@ -109,7 +111,7 @@ class CreateApi
                 $this->name = \Sys\Tool::toCamelCase($this->argv[1]);
             } else {
                 if (!$this->name) {
-                    $this->name = $this->ask_cli('输入指定模块名称: ');
+                    $this->name = Cli::ask_cli('输入指定模块名称: ');
                     if ($this->name == '') {
                         continue;
                     }
@@ -117,9 +119,9 @@ class CreateApi
             }
 
             //判定模块是否存在
-            $modelDir = BASE_PATH . '/Api/' . \Sys\Tool::toCamelCase($this->name);
+            $modelDir = APP_PATH . '/Api/' . \Sys\Tool::toCamelCase($this->name);
             if (!is_dir($modelDir)) {
-                $this->warning_cli("{$this->name} 模块不存在");
+                Cli::warning_cli("{$this->name} 模块不存在");
                 $this->name = '';
                 continue;
             }
@@ -129,7 +131,7 @@ class CreateApi
                 $this->version = (int) $this->opt['version']->value;
             } else {
                 if ($this->delAll === false) {
-                    $this->delAll = $this->ask_cli('是否删除整个模块(y/n): ');
+                    $this->delAll = Cli::ask_cli('是否删除整个模块(y/n): ');
                     if ($this->delAll == 'y') {
                         $this->version = 0;
                     } else {
@@ -138,7 +140,7 @@ class CreateApi
                     }
                 }
                 if ($this->delAll == 'n' && !$this->version) {
-                    $this->version = (int) $this->ask_cli('输入指定版本号：v');
+                    $this->version = (int) Cli::ask_cli('输入指定版本号：v');
                     if ($this->version == 0) {
                         continue;
                     }
@@ -147,13 +149,13 @@ class CreateApi
 
             $dir = $modelDir . ($this->version != 0 ? '/V' . $this->version : '');
             if ($this->delAll == 'n' && !is_dir($dir)) {
-                $this->warning_cli("{$this->name} 模块下 v{$this->version} 版本不存在");
+                Cli::warning_cli("{$this->name} 模块下 v{$this->version} 版本不存在");
                 $this->version = 0;
                 continue;
             }
 
-            if ('y' == $this->ask_cli('确定删除?(y/n):')) {
-                $this->echo_cli($dir);
+            if ('y' == Cli::ask_cli('确定删除?(y/n):')) {
+                Cli::echo_cli($dir);
                 $this->delDirAndFile($dir);
             }
             break;
@@ -189,7 +191,7 @@ class CreateApi
         } elseif (strpos($this->argv[1], '-') !== 0) {
             $this->name = \Sys\Tool::toCamelCase($this->argv[1]);
         } else {
-            $this->warning_cli('请输入有效参数');
+            Cli::warning_cli('请输入有效参数');
             return $this->help();
         }
 
@@ -200,9 +202,9 @@ class CreateApi
             $this->version = 1;
         }
 
-        $dir = BASE_PATH . '/Api/' . $this->name . '/V' . $this->version;
+        $dir = APP_PATH . '/Api/' . $this->name . '/V' . $this->version;
         if (is_dir($dir) && !$this->init) {
-            $r = $this->ask_cli('该Api模块此版本已经存在， 是否重置该模块(y/n):');
+            $r = Cli::ask_cli('该Api模块此版本已经存在， 是否重置该模块(y/n):');
             if ($r == 'y') {
                 $this->init = true;
                 return $this->run();
@@ -211,7 +213,7 @@ class CreateApi
             }
         }
 
-        // $this->echo_cli($this->name);
+        // Cli::echo_cli($this->name);
         $this->create();
     }
 
@@ -250,7 +252,7 @@ class CreateApi
         foreach ($this->files as $key => $config) {
             $namespace = 'Api' . $key;
             //创建目录
-            $dir = BASE_PATH . '/' . str_replace('\\', '/', $namespace);
+            $dir = APP_PATH . '/' . str_replace('\\', '/', $namespace);
             if (!is_dir($dir)) {
                 if (!$this->createDir($dir)) {
                     return $this->createFailed = true;
@@ -284,14 +286,14 @@ class {$fileConf['name']} extends {$fileConf['extends']}
 EOF;
                 if (!file_put_contents($fileName, $content)) {
                     $this->createFailed = true;
-                    $this->warning_cli('文件: ' . $fileName . ' 创建失败!');
+                    Cli::warning_cli('文件: ' . $fileName . ' 创建失败!');
                     return;
                 }
-                $this->echo_cli('文件: ' . $fileName . ' 创建成功!');
+                Cli::echo_cli('文件: ' . $fileName . ' 创建成功!');
             }
         }
         if (!$this->createFailed) {
-            $this->echo_cli('创建完成!!!');
+            Cli::echo_cli('创建完成!!!');
         }
     }
 
@@ -303,10 +305,10 @@ EOF;
     public function createDir($dir)
     {
         if (mkdir($dir, 0755, true)) {
-            $this->echo_cli('目录: ' . $dir . ' 创建成功.');
+            Cli::echo_cli('目录: ' . $dir . ' 创建成功.');
             return true;
         } else {
-            $this->warning_cli('目录: ' . $dir, ' 创建失败, 可以尝试root权限执行');
+            Cli::warning_cli('目录: ' . $dir, ' 创建失败, 可以尝试root权限执行');
             return false;
         }
     }
@@ -325,65 +327,23 @@ EOF;
                         delDirAndFile("$dirName/$item");
                     } else {
                         if (unlink("$dirName/$item")) {
-                            $this->echo_cli("成功删除文件： $dirName/$item");
+                            Cli::echo_cli("成功删除文件： $dirName/$item");
                         }
                     }
                 }
             }
             closedir($handle);
             if (rmdir($dirName)) {
-                $this->echo_cli("成功删除目录： $dirName");
+                Cli::echo_cli("成功删除目录： $dirName");
             }
 
         }
     }
 
-    /**
-     * 询问参数
-     * @param  [string] $quest [提示语]
-     * @return [string] [用户输入的信息]
-     */
-    public function ask_cli($quest = '')
-    {
-        fwrite(STDOUT, $quest);
-        return trim(fgets(STDIN));
-    }
-
-    /**
-     * 输出警告信息
-     * @param  [type] $str [description]
-     * @return [type]      [description]
-     */
-    public function warning_cli($str = '')
-    {
-        fwrite(STDERR, sprintf("\033[0;31m%s\033[0m", $str . "\n"));
-    }
-
-    /**
-     * 输出
-     * @param  string $str 内容
-     * @param  string $color 颜色
-     * @return [type]      [description]
-     */
-    public function echo_cli($str = '', $col = 'blue')
-    {
-        $colors = [
-            'red'    => "\033[0;31m%s\033[0m",
-            'green'  => "\033[0;32m%s\033[0m",
-            'blue'   => "\033[0;34m%s\033[0m",
-            'cyan'   => "\033[0;36m%s\033[0m",
-            'purple' => "\033[0;35m%s\033[0m",
-            'brown'  => "\033[0;33m%s\033[0m",
-            'yellow' => "\033[1;33m%s\033[0m",
-        ];
-        $c = isset($colors[$col]) ? $colors[$col] : $colors['blue'];
-        fwrite(STDOUT, sprintf($c, $str . "\n"));
-    }
-
     public function __destruct()
     {
         if ($this->createFailed) {
-            $this->delDirAndFile(BASE_PATH . '/Api/' . $this->name . ($this->version ? '/V' . $this->version : ''));
+            $this->delDirAndFile(APP_PATH . '/Api/' . $this->name . ($this->version ? '/V' . $this->version : ''));
         }
     }
 }

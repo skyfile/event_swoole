@@ -26,29 +26,41 @@ defined('DEVELOPMENT') || define('DEVELOPMENT', !(PRODUCTION || STAGING || TESTI
 //当前环境
 defined('CURRENV') || define('CURRENV', (PRODUCTION ? 'production' : (TESTING ? 'testing' : 'development')));
 
-//是否开启debug
-defined('DEBUG') || define('DEBUG', PRODUCTION ? 'off' : 'on');
-
 //换行符
 define('NL', PHP_OS == 'WINNT' ? "\r\n" : "\n");
 define('BL', '<br />' . NL);
 
+//是否开启debug
+defined('DEBUG') || define('DEBUG', PRODUCTION ? 'off' : 'on');
+
 //运行环境时区
 date_default_timezone_set('PRC');
 
-//当前时间戳
-// define("CURR_TIMESTAMP", time());
-
+//项目根目录
 define('BASE_PATH', realpath(__DIR__ . '/../'));
 define('SYS_PATH', BASE_PATH . '/Sys/');
-define('CONF_PATH', BASE_PATH . '/Configs/');
 define('VENDOR_PATH', BASE_PATH . '/../vendor/');
 
+if (!defined('CURR_MODULE') || CURR_MODULE == '') {
+    die('Please define CURR_MODULE in index.php!');
+} else {
+    $first = substr(CURR_MODULE, 0, 1);
+    if (strtoupper($first) != $first) {
+        die('The first letter of the module name must be capital!');
+    }
+    unset($first);
+}
+
+define('APP_PATH', BASE_PATH . '/' . CURR_MODULE . '/'); //模块路径
+define('CONF_PATH', APP_PATH . 'Config/');
+
 require SYS_PATH . 'Sys.php';
+\Sys::addNameSpace('Sys', BASE_PATH . '/Sys/');
+
 //自动加载
-$nameSpace = ['Sys', 'Class', 'Event', 'Model'];
+$nameSpace = ['Event', 'Model'];
 foreach ($nameSpace as $name) {
-    \Sys::addNameSpace($name, BASE_PATH . "/$name/");
+    \Sys::addNameSpace($name, APP_PATH . "$name/");
 }
 
 spl_autoload_register('\\Sys::autoload');
@@ -57,9 +69,3 @@ spl_autoload_register('\\Sys::autoload');
 require_once VENDOR_PATH . 'autoload.php';
 
 \Sys::getInstance();
-
-/**
- * 初始化HTTP方法内容
- * @var [type]
- */
-$_PUT = $_PATCH = $_DELETE = [];

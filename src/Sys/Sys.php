@@ -5,7 +5,6 @@
 class Sys
 {
     public static $obj;
-    public static $base_path;
     protected static $namespaces;
     public static $models;
 
@@ -15,11 +14,6 @@ class Sys
 
     private function __construct()
     {
-        if (defined('BASE_PATH')) {
-            self::$base_path = BASE_PATH;
-        } else {
-            throw new \Exception(__CLASS__ . 'WEBPATH empty.');
-        }
         $this->config = new Sys\Config;
         $this->config->setPath(CONF_PATH . CURRENV);
     }
