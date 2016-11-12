@@ -1,4 +1,5 @@
-/src/Logs/*
+/src/App/Data/Logs/*
+/src/App/Data/View/*
 /src/Public/.user.ini
 /vendor
 composer.lock
