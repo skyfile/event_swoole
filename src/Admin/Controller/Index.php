@@ -9,8 +9,8 @@ class Index extends Base
     public function index($value = '')
     {
         $this->view->setVar([
-            'title' => '测试标题',
-            'key'   => '测试成功222',
+            'title' => '默认页面',
+            'key'   => 'Admin 恭喜你， 模块创建成功',
         ]);
         $this->view->setView('test');
     }

@@ -14,7 +14,7 @@ class Platform
         $this->platform = PHP_OS == 'WINNT' ? 'windows' : 'linux';
     }
 
-    public function getInstance($key = '')
+    public static function getInstance($key = '')
     {
         if (!self::$obj) {
             self::$obj = new self();

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+root=$(cd "$(dirname "$0")"; cd ..; pwd)
+
+# php bin
+php=$(which "php")
+if [ -z $php ]; then
+    echo 'php不在你的环境变量中, 请予以添加'
+    exit
+fi
+
+# 查询并提示安装 composer
+composer=$(which "composer")
+if [ -z $composer ]; then
+    echo '请安装 Composer 工具，安装方法请参考： <https://getcomposer.org/download/>'
+    exit
+fi
+
+# 执行发布请求，并指定项目根目录，及配置文件
+$php $root/Cli/createModule.php $*

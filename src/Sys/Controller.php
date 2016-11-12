@@ -13,6 +13,8 @@ class Controller
     public function __construct()
     {
         $this->view = \Sys::$obj->View;
+        $arr        = explode('\\', get_class($this));
+        $this->view->setView(end($arr));
     }
 
     public static function getInstance($key = '')

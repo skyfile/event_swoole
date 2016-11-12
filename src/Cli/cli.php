@@ -20,8 +20,8 @@ class Cli
                     self::$module = '';
                     continue;
                 }
+                !defined('CURR_MODULE') && define('CURR_MODULE', self::$module);
             }
-            !defined('CURR_MODULE') && define('CURR_MODULE', self::$module);
         }
     }
 
@@ -65,5 +65,32 @@ class Cli
         ];
         $c = isset($colors[$col]) ? $colors[$col] : $colors['blue'];
         fwrite(STDOUT, sprintf($c, $str . "\n"));
+    }
+
+    /**
+     * 循环删除目录和其中的文件
+     * @param  [type] $dirName [description]
+     * @return [type]          [description]
+     */
+    public static function delDirAndFile($dirName)
+    {
+        if ($handle = opendir("$dirName")) {
+            while (false !== ($item = readdir($handle))) {
+                if ($item != '.' && $item != '..') {
+                    if (is_dir("$dirName/$item")) {
+                        self::delDirAndFile("$dirName/$item");
+                    } else {
+                        if (unlink("$dirName/$item")) {
+                            self::echo_cli("成功删除文件： $dirName/$item");
+                        }
+                    }
+                }
+            }
+            closedir($handle);
+            if (rmdir($dirName)) {
+                self::echo_cli("成功删除目录： $dirName");
+            }
+
+        }
     }
 }

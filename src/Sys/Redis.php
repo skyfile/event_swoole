@@ -27,7 +27,7 @@ class Redis
         $this->connect();
     }
 
-    public function getInstance($key)
+    public static function getInstance($key)
     {
         if (!self::$obj) {
             $config = \Sys::$obj->config['redis'];

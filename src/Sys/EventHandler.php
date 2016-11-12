@@ -1,5 +1,5 @@
 <?php
-namespace Event;
+namespace Sys;
 
 interface EventInterface
 {

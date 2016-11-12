@@ -12,6 +12,7 @@ $start->run();
 class CreateApi
 {
     public $name;
+    public $argv;
     public $init         = false;
     public $version      = 0;
     public $createFailed = false; //是否创建失败
@@ -75,7 +76,7 @@ class CreateApi
             $dirName = APP_PATH . '/Api' . ($this->name ? '/' . $this->name : '');
         }
         if (!is_dir($dirName)) {
-            return Cli::warning_cli('没有此目录, 请检查参数');
+            return Cli::warning_cli('没有此目录, 可创建');
         }
         if ($handle = opendir($dirName)) {
             $prefix   = '|' . str_repeat('_', ($this->floor - 1) * 2);
@@ -156,7 +157,7 @@ class CreateApi
 
             if ('y' == Cli::ask_cli('确定删除?(y/n):')) {
                 Cli::echo_cli($dir);
-                $this->delDirAndFile($dir);
+                Cli::delDirAndFile($dir);
             }
             break;
         }
@@ -313,37 +314,10 @@ EOF;
         }
     }
 
-    /**
-     * 循环删除目录和其中的文件
-     * @param  [type] $dirName [description]
-     * @return [type]          [description]
-     */
-    public function delDirAndFile($dirName)
-    {
-        if ($handle = opendir("$dirName")) {
-            while (false !== ($item = readdir($handle))) {
-                if ($item != '.' && $item != '..') {
-                    if (is_dir("$dirName/$item")) {
-                        delDirAndFile("$dirName/$item");
-                    } else {
-                        if (unlink("$dirName/$item")) {
-                            Cli::echo_cli("成功删除文件： $dirName/$item");
-                        }
-                    }
-                }
-            }
-            closedir($handle);
-            if (rmdir($dirName)) {
-                Cli::echo_cli("成功删除目录： $dirName");
-            }
-
-        }
-    }
-
     public function __destruct()
     {
         if ($this->createFailed) {
-            $this->delDirAndFile(APP_PATH . '/Api/' . $this->name . ($this->version ? '/V' . $this->version : ''));
+            Cli::delDirAndFile(APP_PATH . '/Api/' . $this->name . ($this->version ? '/V' . $this->version : ''));
         }
     }
 }

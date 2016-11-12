@@ -60,8 +60,10 @@ class App
         if (!method_exists($obj, $this->Action)) {
             die('This Action Is Not Exists In This Controller!!');
         }
+        //执行程序
         call_user_func_array([$obj, $this->Action], $this->params);
-        var_dump($obj->setVar);
-        return;
+
+        //渲染模板
+        return $obj->view->render();
     }
 }

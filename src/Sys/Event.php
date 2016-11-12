@@ -28,7 +28,7 @@ class Event
         }
     }
 
-    public function getInstance($key = 'master')
+    public static function getInstance($key = 'master')
     {
         if (!self::$obj) {
             $config = \Sys::$obj->config['event'];

@@ -1,7 +1,7 @@
 <?php
 namespace Event;
 
-class SendMailEvent implements EventInterface
+class SendMailEvent implements \Sys\EventInterface
 {
     public $transport;
     public $mailer;

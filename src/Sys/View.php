@@ -6,16 +6,21 @@ namespace Sys;
  */
 class View
 {
+    //模板后缀名
+    const SUFFIX = '.html';
+
     static $obj;
     public $twig;
+    protected $var      = [];
+    protected $template = '';
+    protected $rootPath;
+    protected $cachePath;
 
     public function __construct($config)
     {
 
-        $loader     = new \Twig_Loader_Filesystem(APP_PATH . 'View');
-        $this->twig = new \Twig_Environment($loader, [
-            'cache' => APP_PATH . '/Data/View',
-        ]);
+        $this->rootPath  = APP_PATH . 'View/';
+        $this->cachePath = APP_PATH . '/Data/View/';
     }
 
     public static function getInstance($key = 'master')
@@ -39,17 +44,67 @@ class View
         if (!is_array($value)) {
             die('must be array');
         }
-
-        if (!empty($this->setVar)) {
-            $this->setVar = array_merge($this->setVar, $value);
+        if (!empty($this->var)) {
+            $this->var = array_merge($this->var, $value);
         } else {
-            $this->setVar = $value;
+            $this->var = $value;
         }
-
+        return true;
     }
 
-    public function __call($func, $params)
+    /**
+     * 获取参数
+     * @return [type] [description]
+     */
+    public function getVar()
     {
-        return call_user_func_array([$this->twig, $func], $params);
+        return $this->var;
+    }
+
+    /**
+     * 设置模板文件
+     * @param string $template [description]
+     */
+    public function setView($template = '')
+    {
+        $this->template = $template;
+    }
+
+    /**
+     * 获取模板文件
+     * @return [type] [description]
+     */
+    public function getView()
+    {
+        return $this->template;
+    }
+
+    /**
+     * 渲染模板
+     * @param  string $template [description]
+     * @return [type]           [description]
+     */
+    public function render($dir = '', $file = '')
+    {
+        if (!$dir) {
+            if (strpos($this->template, '/') !== false) {
+                $arr  = array_map('\\Sys\\Tool::toCamelCase', explode('/', $this->template));
+                $dir  = $arr[0];
+                $file = $file ? $file : $arr[1];
+            } else {
+                $dir  = 'Index';
+                $file = $file ? $file : \Sys\Tool::toCamelCase($this->template);
+            }
+        }
+        if (!$this->twig) {
+            $this->twig = new \Twig_Environment(
+                new \Twig_Loader_Filesystem([$dir], $this->rootPath),
+                [
+                    'cache' => $this->cachePath,
+                    'debug' => DEBUG ? false : true,
+                ]);
+        }
+        echo $this->twig->render($file . self::SUFFIX, $this->var);
+        return;
     }
 }
