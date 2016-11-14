@@ -16,7 +16,7 @@ class View
     protected $rootPath;
     protected $cachePath;
 
-    public function __construct($config)
+    public function __construct($config = [])
     {
 
         $this->rootPath  = APP_PATH . 'View/';
@@ -26,11 +26,11 @@ class View
     public static function getInstance($key = 'master')
     {
         if (!self::$obj) {
-            $config = \Sys::$obj->config['view'];
-            if (!$config) {
-                throw new \Exception('view config is not fund.');
-            }
-            self::$obj = new self($config);
+            // $config = \Sys::$obj->config['view'];
+            // if (!$config) {
+            //     throw new \Exception('view config is not fund.');
+            // }
+            self::$obj = new self();
         }
         return self::$obj;
     }

@@ -37,10 +37,15 @@ class Sys
      */
     public function getModel($modelName)
     {
-        // $modelName = \Sys\Tool::toCamelCase($modelName);
+        $modelName = \Sys\Tool::toCamelCase($modelName);
         if (!isset(self::$models[$modelName])) {
-            $model                    = '\\Model\\' . $modelName;
-            self::$models[$modelName] = new $model();
+            $model = '\\Model\\' . $modelName;
+            if (class_exists($model)) {
+                $class = new $model();
+            } else {
+                $class = new \Sys\Model($modelName);
+            }
+            self::$models[$modelName] = $class;
         }
         return self::$models[$modelName];
     }

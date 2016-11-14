@@ -9,10 +9,15 @@ class Model
     public $table  = '';
     public $select = '*';
 
-    public function __construct($config_key = 'master')
+    public function __construct($table = '', $config_key = 'master')
     {
         $this->db = \Sys::$obj->Db($config_key);
-        $this->db->setTable($this->getTableName());
+        if ($table == '') {
+            $this->getTableName();
+        } else {
+            $this->setTableName(\Sys\Tool::toUnderScore($table));
+        }
+        $this->db->setTable($this->table);
         $this->db->selectDB();
     }
 
