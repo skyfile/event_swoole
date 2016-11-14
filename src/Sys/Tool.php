@@ -571,4 +571,27 @@ class Tool
         }
         return $val;
     }
+
+    /**
+     * 通过curl获取文件
+     * @param  string $url      地址
+     * @param  string $username 用户名
+     * @param  string $password 密码
+     * @return [type]           [description]
+     */
+    public static function curlDownloadFile($url, $username = '', $password = '')
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        if ($username != '') {
+            curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
+        }
+        $output = curl_exec($ch); // 执行
+        curl_close($ch);          // 关闭
+
+        return $output;
+    }
 }
