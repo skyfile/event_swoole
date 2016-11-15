@@ -74,7 +74,7 @@ class createModule
         ],
         'Data'       => [
             'isDir' => true,
-            'mode'  => 0775,
+            'mode'  => 0777,
             'list'  => [
                 'Logs' => ['isDir' => true, 'mode' => 0775, 'list' => []],
                 'View' => ['isDir' => true, 'mode' => 0775, 'list' => []],

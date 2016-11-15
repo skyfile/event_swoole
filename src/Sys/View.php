@@ -100,8 +100,8 @@ class View
             $this->twig = new \Twig_Environment(
                 new \Twig_Loader_Filesystem([$dir], $this->rootPath),
                 [
-                    'cache' => $this->cachePath,
-                    'debug' => DEBUG ? false : true,
+                    'cache' => DEBUG ? false : $this->cachePath,
+                    'debug' => DEBUG ? true : false,
                 ]);
         }
         echo $this->twig->render($file . self::SUFFIX, $this->var);

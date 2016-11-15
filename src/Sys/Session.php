@@ -16,8 +16,8 @@ class Session
     static $sess_domain;
 
     public $cache;
-
-    public $handleList = ['redis', 'mysql', 'file']; //存储方式
+    public $sessID;
+    public $handleList = ['redis', 'db', 'file']; //存储方式
 
     public function __construct($config = [])
     {
@@ -26,7 +26,7 @@ class Session
         } else {
             $this->handle = 'file';
         }
-
+        $this->cache = \Sys::$obj->cache($this->handle);
         $this->init();
     }
 
@@ -74,6 +74,7 @@ class Session
      */
     public function setId($session_id)
     {
+        $this->sessID = $session_id;
         return session_id($session_id);
     }
 

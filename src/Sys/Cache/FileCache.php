@@ -4,7 +4,7 @@ namespace Sys\Cache;
 /**
  * 文件缓存类
  */
-class FileCache
+class FileCache implements Cache
 {
     protected $config;
     protected $shard_id = 0;
@@ -34,8 +34,7 @@ class FileCache
      */
     protected function getFileName($key)
     {
-        $file     = $this->config['cache_dir'] . $this->shard_id . '/' . trim(str_replace('_', '/', $key), '/');
-        echo $dir = dirname($file);
+        $file = $this->config['cache_dir'] . $this->shard_id . '/' . trim(str_replace('_', '/', $key), '/');
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
         }

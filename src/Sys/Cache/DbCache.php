@@ -4,7 +4,7 @@ namespace Sys\Cache;
 /**
  * mysql缓存类
  */
-class DbCache
+class DbCache implements Cache
 {
     public $db;
     public $shard_id = 0;

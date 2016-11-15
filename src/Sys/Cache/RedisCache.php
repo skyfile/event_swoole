@@ -4,7 +4,7 @@ namespace Sys\Cache;
 /**
  * redis缓存类
  */
-class RedisCache
+class RedisCache implements Cache
 {
     public $redis;
     public function __construct($ckey = 'master')

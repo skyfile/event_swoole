@@ -1,7 +1,7 @@
 <?php
 return [
     'master' => [
-        'handle' => 'redis',
+        'handle' => 'file',
         'path'   => '',
     ],
 ];
