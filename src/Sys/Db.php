@@ -422,7 +422,7 @@ class Db
 
         $field  = substr($field, 0, -1);
         $values = substr($values, 0, -1);
-        return $this->query("insert into {$this->table} ($field) values($values)");
+        return $this->query("insert into {$this->db_apt->table} ($field) values($values)");
     }
 
     /**
@@ -451,7 +451,7 @@ class Db
      */
     public function delete()
     {
-        return $this->query("delete from {$this->table} {$this->where} {$this->limit}");
+        return $this->query("delete from {$this->db_apt->table} {$this->db_apt->where} {$this->db_apt->limit}");
     }
 
     /**

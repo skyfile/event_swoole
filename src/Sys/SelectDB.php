@@ -151,10 +151,16 @@ class SelectDB
      */
     public function where($where)
     {
-        if ($this->where == '') {
-            $this->where = 'where ' . $where;
+        if (is_array($where)) {
+            foreach ($where as $k => $v) {
+                $this->where("`$k` = '$v'");
+            }
         } else {
-            $this->where = $this->where . ' and ' . $where;
+            if ($this->where == '') {
+                $this->where = 'where ' . $where;
+            } else {
+                $this->where = $this->where . ' and ' . $where;
+            }
         }
     }
 
@@ -188,10 +194,16 @@ class SelectDB
      */
     public function orwhere($where)
     {
-        if ($this->where == '') {
-            $this->where = 'where ' . $where;
+        if (is_array($where)) {
+            foreach ($where as $k => $v) {
+                $this->orwhere("`$k` = '$v'");
+            }
         } else {
-            $this->where = $this->where . ' or ' . $where;
+            if ($this->where == '') {
+                $this->where = 'where ' . $where;
+            } else {
+                $this->where = $this->where . ' or ' . $where;
+            }
         }
     }
 

@@ -8,6 +8,7 @@ class Model
 {
     public $table  = '';
     public $select = '*';
+    public $create_sql;
 
     public function __construct($table = '', $config_key = 'master')
     {
@@ -44,9 +45,26 @@ class Model
         $this->db->setTable($this->table);
     }
 
-    public function debug()
+    /**
+     * 设置debug状态
+     * @return [type] [description]
+     */
+    public function debug($stat = true)
     {
-        $this->db->debug = true;
+        $this->db->debug = ($stat === true) ? true : false;
+    }
+
+    /**
+     * 建立表，必须在Model类中，指定create_sql
+     * @return bool
+     */
+    public function createTable()
+    {
+        if ($this->create_sql) {
+            return $this->db->query($this->create_sql);
+        } else {
+            return false;
+        }
     }
 
     public function __call($func, $params)

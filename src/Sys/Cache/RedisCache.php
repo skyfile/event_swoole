@@ -7,7 +7,7 @@ namespace Sys\Cache;
 class RedisCache
 {
     public $redis;
-    public function __construct($ckey)
+    public function __construct($ckey = 'master')
     {
         $this->redis = \Sys::$obj->Redis($ckey);
     }

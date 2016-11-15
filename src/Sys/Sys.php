@@ -35,15 +35,15 @@ class Sys
      * @param  [type] $modelName [description]
      * @return [type]            [description]
      */
-    public function getModel($modelName)
+    public function getModel($modelName, $ckey = 'master')
     {
         $modelName = \Sys\Tool::toCamelCase($modelName);
         if (!isset(self::$models[$modelName])) {
             $model = '\\Model\\' . $modelName;
             if (class_exists($model)) {
-                $class = new $model();
+                $class = new $model('', $ckey);
             } else {
-                $class = new \Sys\Model($modelName);
+                $class = new \Sys\Model($modelName, $ckey);
             }
             self::$models[$modelName] = $class;
         }

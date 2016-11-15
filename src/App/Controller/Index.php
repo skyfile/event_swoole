@@ -14,11 +14,13 @@ class Index extends Base
         // ]);
         // $this->view->setView('test');
 
-        // $cache = \Sys::$obj->cache('db');
-        // echo '<pre>';
-        // var_dump($cache);
-        $model = \Sys::$obj->getModel('test');
+        $cache = \Sys::$obj->cache('file');
+        $res   = $cache->set('test', 'jfdkdslfadsfasdf');
         echo '<pre>';
-        var_dump($model);
+        var_dump($res);
+        // $model = \Sys::$obj->getModel('test');
+        // echo '<pre>';
+        // var_dump($model);
+
     }
 }
